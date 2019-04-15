@@ -25,6 +25,7 @@
 
 #### project specific ignores below
 
+
 .DS_Store
 .dart_tool/
 
@@ -35,3 +36,7 @@ build/
 ios/.generated/
 ios/Flutter/Generated.xcconfig
 ios/Runner/GeneratedPluginRegistrant.*
+
+# no native parts right now.
+/ios
+/android
