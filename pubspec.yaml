@@ -1,6 +1,6 @@
 name: remote_logging_handlers
 description: Logging handlers for logz and loki.
-version: 0.1.0+1
+version: 0.1.0+2
 author: Herbert Poul <herbert@poul.at>
 homepage: https://github.com/AustrianApps/remote_logging_handlers
 
