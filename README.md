@@ -1,7 +1,7 @@
 # remote_logging_handlers
 
-Native dart package for handlers of the [logging](https://pub.dartlang.org/packages/logging) for
-[logz](https://logz.io/) and [loki](https://github.com/grafana/loki).
+Native dart package for handlers of the [logging](https://pub.dartlang.org/packages/logging) package
+ for [logz.io](https://logz.io/) and [loki](https://github.com/grafana/loki).
 
 # Performance
 

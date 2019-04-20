@@ -1,14 +1,15 @@
 name: remote_logging_handlers
 description: Logging handlers for logz and loki.
-version: 0.0.1
-author: Herbert Poul
-homepage:
+version: 0.1.0
+author: Herbert Poul <herbert@poul.at>
+homepage: https://github.com/AustrianApps/remote_logging_handlers
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  pedantic: '1.5.0'
+  meta: ^1.1.7
+  pedantic: ^1.5.0
   logging: ^0.11.3+2
   dio: ^2.0.0
   rxdart: ^0.20.0
