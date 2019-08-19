@@ -40,3 +40,5 @@ ios/Runner/GeneratedPluginRegistrant.*
 # no native parts right now.
 /ios
 /android
+/pubspec.lock
+
