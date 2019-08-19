@@ -5,13 +5,29 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
+import 'package:remote_logging_handlers/src/logrecord_formatter.dart';
 import 'package:rxdart/rxdart.dart';
 
 final _logger = Logger('base_logger');
 
-typedef void LogRecordListener(LogRecord rec);
+typedef LogRecordListener = void Function(LogRecord rec);
 
-abstract class BaseLogSender {
+abstract class BaseLogHandler {
+  const BaseLogHandler({this.formatter = const DefaultLogRecordFormatter()});
+
+  final LogRecordFormatter formatter;
+
+  @protected
+  void handle(LogRecord record);
+
+  LogRecordListener logListener() => (LogRecord record) => handle(record);
+
+  void call(LogRecord record) => handle(record);
+}
+
+abstract class BaseLogSender extends BaseLogHandler {
+  BaseLogSender({LogRecordFormatter formatter = const DefaultLogRecordFormatter()}) : super(formatter: formatter);
+
   Map<String, String> _userProperties = {};
 
   final int _bufferSize = 500;
@@ -19,7 +35,7 @@ abstract class BaseLogSender {
   List<LogEntry> _logEvents = <LogEntry>[];
   Timer _timer;
 
-  SimpleJobQueue _sendQueue = SimpleJobQueue();
+  final SimpleJobQueue _sendQueue = SimpleJobQueue();
 
   set userProperties(Map<String, String> userProperties) {
     _userProperties = userProperties;
@@ -47,44 +63,42 @@ abstract class BaseLogSender {
   @protected
   Stream<void> sendLogEvents(List<LogEntry> logEntries, Map<String, String> userProperties);
 
-  Future<void> _triggerSendLogEvents() =>
-    Future(() {
-      final entries = _logEvents;
-      _logEvents = [];
-      _sendQueue.add(SimpleJobDef(
-        runner: (job) => sendLogEvents(entries, _userProperties),
-      ));
-      return _sendQueue.triggerJobRuns().then((val) {
-        _logger.finest('Sent log jobs: $val');
-        return null;
+  Future<void> _triggerSendLogEvents() => Future(() {
+        final entries = _logEvents;
+        _logEvents = [];
+        _sendQueue.add(SimpleJobDef(
+          runner: (job) => sendLogEvents(entries, _userProperties),
+        ));
+        return _sendQueue.triggerJobRuns().then((val) {
+          _logger.finest('Sent log jobs: $val');
+          return null;
+        });
       });
-    });
 
-  LogRecordListener logListener() => (LogRecord rec) {
-        if (rec.loggerName == _logger.fullName && rec.level.value < Level.FINE.value) {
-          return;
-        }
-        final stackTrace = rec.stackTrace ?? (rec.error is Error ? (rec.error as Error).stackTrace : null);
-        final message = '${rec.message}${stackTrace != null ? '\n' + stackTrace.toString() : ''}';
-//      lokiApiSender.log(rec.time, message);
-        final lineLabels = {
-          'lvl': rec.level.name,
-          'logger': rec.loggerName,
-        };
-        if (rec.error != null) {
-          lineLabels['e'] = rec.error.toString();
-          lineLabels['eType'] = rec.error.runtimeType.toString();
-        }
-        log(rec.time, message, lineLabels);
-      };
-
+  @override
+  void handle(LogRecord record) {
+    // do not print our own logging lines, kind of recursive.
+    if (record.loggerName == _logger.fullName && record.level.value < Level.FINE.value) {
+      return;
+    }
+    final message = formatter.format(record);
+    final lineLabels = {
+      'lvl': record.level.name,
+      'logger': record.loggerName,
+    };
+    if (record.error != null) {
+      lineLabels['e'] = record.error.toString();
+      lineLabels['eType'] = record.error.runtimeType.toString();
+    }
+    log(record.time, message, lineLabels);
+  }
 
   Future<void> flush() => _triggerSendLogEvents();
 }
 
 abstract class BaseDioLogSender extends BaseLogSender {
   Future<void> sendLogEventsWithDio(
-      List<LogEntry> _logEvents, Map<String, String> userProperties, CancelToken cancelToken);
+      List<LogEntry> entries, Map<String, String> userProperties, CancelToken cancelToken);
 
   @override
   Stream<void> sendLogEvents(List<LogEntry> logEntries, Map<String, String> userProperties) {
@@ -127,7 +141,7 @@ class LogEntry {
   String get tsFormatted => _dateFormat.format(ts.toUtc());
 }
 
-typedef Stream<void> SimpleJobRunner(SimpleJobDef job);
+typedef SimpleJobRunner = Stream<void> Function(SimpleJobDef job);
 
 class SimpleJobDef {
   SimpleJobDef({@required this.runner});
@@ -160,7 +174,8 @@ class SimpleJobQueue {
     final Completer<int> completer = Completer();
     int successfulJobs = 0;
 //    final job = _queue.removeFirst();
-    _currentStream = Observable.concat(_queue.map((job) => job.runner(job).map((val) => job)).toList()).listen((successJob) {
+    _currentStream =
+        Observable.concat(_queue.map((job) => job.runner(job).map((val) => job)).toList()).listen((successJob) {
       _queue.remove(successJob);
       successfulJobs++;
       _logger.finest('Success job. remaining: ${_queue.length} - completed: $successfulJobs');
@@ -179,16 +194,16 @@ class SimpleJobQueue {
       _currentStream = null;
       completer.completeError(error, stackTrace);
 
-      final int errorWait = 10;
-      final minWait = Duration(seconds: errorWait * (_errorCount + 1));
+      const int errorWait = 10;
+      final minWait = Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
       if (_lastError.difference(DateTime.now()).abs().compareTo(minWait) < 0) {
         _logger.finest('There was an error. waiting at least $minWait');
         if (_queue.length > maxQueueSize) {
           _logger.finest('clearing log buffer. ${_queue.length}');
           _queue.clear();
         }
-        return Future.value(null);
       }
+      return Future.value(null);
     });
 
     return completer.future;

@@ -21,13 +21,11 @@ class LogzIoApiSender extends BaseDioLogSender {
 
   Dio _clientInstance;
 
-  Dio get _client => _clientInstance == null ? _clientInstance = Dio() : _clientInstance;
+  Dio get _client => _clientInstance ??= Dio();
 
   @override
   Future<void> sendLogEventsWithDio(
-      List<LogEntry> _logEvents, Map<String, String> userProperties, CancelToken cancelToken) {
-    final entries = _logEvents;
-    _logEvents = [];
+      List<LogEntry> entries, Map<String, String> userProperties, CancelToken cancelToken) {
     final body = entries
         .map((entry) => {
               '@timestamp': entry.ts.toUtc().toIso8601String(),

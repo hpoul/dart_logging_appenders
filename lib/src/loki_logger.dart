@@ -30,7 +30,7 @@ class LokiApiSender extends BaseDioLogSender {
 
   Dio _clientInstance;
 
-  Dio get _client => _clientInstance == null ? _clientInstance = Dio() : _clientInstance;
+  Dio get _client => _clientInstance ??= Dio();
 
   static String _encodeLineLabelValue(String value) {
     if (value.contains(' ')) {
