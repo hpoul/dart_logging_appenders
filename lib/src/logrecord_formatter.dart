@@ -14,8 +14,8 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
-    sb.write(
-        '${rec.loggerName} - ${rec.level.name}: ${rec.time}: ${rec.message}');
+    sb.write('${rec.time} ${rec.level.name} '
+        '${rec.loggerName} - ${rec.message}');
 
     if (rec.error != null) {
       sb.write(rec.error);

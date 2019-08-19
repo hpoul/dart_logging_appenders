@@ -57,8 +57,13 @@ class RotatingFileLogger extends BaseLogHandler {
       return false;
     }
     _nextRotateCheck = clock.now().add(rotateCheckInterval);
-    final length = await _outputFile.length();
-    if (length < rotateAtSizeBytes) {
+    try {
+      final length = await _outputFile.length();
+      if (length < rotateAtSizeBytes) {
+        return false;
+      }
+    } on FileSystemException catch(_) {
+      // if .length() throws an error, ignore it.
       return false;
     }
     for (int i = keepRotateCount - 1; i >= 0; i--) {
