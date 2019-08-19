@@ -1,6 +1,6 @@
 # logging_appenders
 
-[![Pub](https://img.shields.io/pub/v/logging_appenders.svg?color=green)](https://pub.dartlang.org/packages/simple_json_persistence)
+[![Pub](https://img.shields.io/pub/v/logging_appenders.svg?color=green)](https://pub.dartlang.org/packages/logging_appenders)
 
 Native dart package for logging appenders usable with the [logging](https://pub.dartlang.org/packages/logging) package.
 
