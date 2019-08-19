@@ -13,7 +13,8 @@ final _logger = Logger('base_logger');
 typedef LogRecordListener = void Function(LogRecord rec);
 
 abstract class BaseLogAppender {
-  const BaseLogAppender({this.formatter = const DefaultLogRecordFormatter()});
+  const BaseLogAppender(LogRecordFormatter formatter)
+      : formatter = formatter ?? const DefaultLogRecordFormatter();
 
   final LogRecordFormatter formatter;
 
@@ -28,7 +29,7 @@ abstract class BaseLogAppender {
 abstract class BaseLogSender extends BaseLogAppender {
   BaseLogSender(
       {LogRecordFormatter formatter = const DefaultLogRecordFormatter()})
-      : super(formatter: formatter);
+      : super(formatter);
 
   Map<String, String> _userProperties = {};
 

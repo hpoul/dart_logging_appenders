@@ -8,13 +8,13 @@ import 'package:logging_appenders/src/logrecord_formatter.dart';
 
 class RotatingFileAppender extends BaseLogAppender {
   RotatingFileAppender({
-    LogRecordFormatter formatter = const DefaultLogRecordFormatter(),
+    LogRecordFormatter formatter,
     @required this.baseFilePath,
     this.keepRotateCount = 3,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
     this.clock = const Clock(),
   })  : assert(baseFilePath != null),
-        super(formatter: formatter) {
+        super(formatter) {
     _outputFile = File(baseFilePath);
     if (!_outputFile.parent.existsSync()) {
       throw StateError(
@@ -80,7 +80,7 @@ class RotatingFileAppender extends BaseLogAppender {
 /// the [builder] method has resolved.
 class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
-  AsyncInitializingLogHandler({this.builder}) {
+  AsyncInitializingLogHandler({this.builder}) : super(null) {
     this.builder().then((newLogHandler) {
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords.forEach(handle);
