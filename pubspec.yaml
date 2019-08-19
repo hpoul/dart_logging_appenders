@@ -1,5 +1,5 @@
 name: logging_appenders
-description: Logging appenders for the logging package for print, file and remote (logz, loki).
+description: Logging appenders for the dart logging package for print, file and remote (logz, loki).
 version: 0.2.0
 author: Herbert Poul <herbert@poul.at>
 homepage: https://github.com/hpoul/logging_appenders
@@ -14,12 +14,9 @@ dependencies:
   rxdart: '>=0.20.0 <1.0.0'
   intl: '>=0.15.0 <1.0.0'
   clock: '>=1.0.0 <2.0.0'
-  flutter:
-    sdk: flutter
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ">=1.5.0 <2.0.0"
   pedantic: '>=1.5.0 <2.0.0'
 
 # The following section is specific to Flutter.
