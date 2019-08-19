@@ -6,8 +6,9 @@ cd "${0%/*}"/..
 
 
 flutter pub get
+pub global activate test_coverage
 
 fail=false
-flutter test --coverage || fail=true
+pub global run test_coverage || fail=true
 echo "fail=$fail"
 bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info

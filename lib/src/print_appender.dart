@@ -7,6 +7,8 @@ import 'package:logging_appenders/src/logrecord_formatter.dart';
 class PrintAppender extends BaseLogAppender {
   PrintAppender({LogRecordFormatter formatter}) : super(formatter);
 
+  void Function(Object line) printer;
+
   @override
   void handle(LogRecord record) {
     print(formatter.format(record));
