@@ -17,7 +17,8 @@ class RotatingFileLogger extends BaseLogHandler {
         super(formatter: formatter) {
     _outputFile = File(baseFilePath);
     if (!_outputFile.parent.existsSync()) {
-      throw StateError('When initializing file logger, ${_outputFile.parent} must exist.');
+      throw StateError(
+          'When initializing file logger, ${_outputFile.parent} must exist.');
     }
     _maybeRotate();
   }
@@ -31,20 +32,24 @@ class RotatingFileLogger extends BaseLogHandler {
   File _outputFile;
 
   /// Returns all available rotated logs, starting from the most current one.
-  List<File> getAllLogFiles() => Iterable.generate(keepRotateCount, (idx) => idx)
-      .map((rotation) => _fileNameForRotation(rotation))
-      .map((fileName) => File(fileName))
-      .takeWhile((file) => file.existsSync())
-      .toList(growable: false);
+  List<File> getAllLogFiles() =>
+      Iterable.generate(keepRotateCount, (idx) => idx)
+          .map((rotation) => _fileNameForRotation(rotation))
+          .map((fileName) => File(fileName))
+          .takeWhile((file) => file.existsSync())
+          .toList(growable: false);
 
   @override
   void handle(LogRecord record) {
-    _outputFile.writeAsString((formatter.formatToStringBuffer(record, StringBuffer())..writeln()).toString(),
+    _outputFile.writeAsString(
+        (formatter.formatToStringBuffer(record, StringBuffer())..writeln())
+            .toString(),
         mode: FileMode.append);
     _maybeRotate();
   }
 
-  String _fileNameForRotation(int rotation) => rotation == 0 ? baseFilePath : '$baseFilePath.$rotation';
+  String _fileNameForRotation(int rotation) =>
+      rotation == 0 ? baseFilePath : '$baseFilePath.$rotation';
 
   /// rotates the file, if it is larger than
   Future<bool> _maybeRotate() async {
@@ -68,7 +73,8 @@ class RotatingFileLogger extends BaseLogHandler {
 
 /// A wrapper LogHandler which will buffer log records until the future provided by
 /// the [builder] method has resolved.
-class AsyncInitializingLogHandler<T extends BaseLogHandler> extends BaseLogHandler {
+class AsyncInitializingLogHandler<T extends BaseLogHandler>
+    extends BaseLogHandler {
   AsyncInitializingLogHandler({this.builder}) {
     this.builder().then((newLogHandler) {
       delegatedLogHandler = newLogHandler;

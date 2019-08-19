@@ -24,8 +24,8 @@ class LogzIoApiSender extends BaseDioLogSender {
   Dio get _client => _clientInstance ??= Dio();
 
   @override
-  Future<void> sendLogEventsWithDio(
-      List<LogEntry> entries, Map<String, String> userProperties, CancelToken cancelToken) {
+  Future<void> sendLogEventsWithDio(List<LogEntry> entries,
+      Map<String, String> userProperties, CancelToken cancelToken) {
     final body = entries
         .map((entry) => {
               '@timestamp': entry.ts.toUtc().toIso8601String(),
@@ -42,7 +42,8 @@ class LogzIoApiSender extends BaseDioLogSender {
           data: body,
           cancelToken: cancelToken,
           options: Options(
-            contentType: ContentType(ContentType.json.primaryType, ContentType.json.subType),
+            contentType: ContentType(
+                ContentType.json.primaryType, ContentType.json.subType),
           ),
         )
         .then((val) => null);

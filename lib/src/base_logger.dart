@@ -26,7 +26,9 @@ abstract class BaseLogHandler {
 }
 
 abstract class BaseLogSender extends BaseLogHandler {
-  BaseLogSender({LogRecordFormatter formatter = const DefaultLogRecordFormatter()}) : super(formatter: formatter);
+  BaseLogSender(
+      {LogRecordFormatter formatter = const DefaultLogRecordFormatter()})
+      : super(formatter: formatter);
 
   Map<String, String> _userProperties = {};
 
@@ -61,7 +63,8 @@ abstract class BaseLogSender extends BaseLogHandler {
   }
 
   @protected
-  Stream<void> sendLogEvents(List<LogEntry> logEntries, Map<String, String> userProperties);
+  Stream<void> sendLogEvents(
+      List<LogEntry> logEntries, Map<String, String> userProperties);
 
   Future<void> _triggerSendLogEvents() => Future(() {
         final entries = _logEvents;
@@ -78,7 +81,8 @@ abstract class BaseLogSender extends BaseLogHandler {
   @override
   void handle(LogRecord record) {
     // do not print our own logging lines, kind of recursive.
-    if (record.loggerName == _logger.fullName && record.level.value < Level.FINE.value) {
+    if (record.loggerName == _logger.fullName &&
+        record.level.value < Level.FINE.value) {
       return;
     }
     final message = formatter.format(record);
@@ -97,11 +101,12 @@ abstract class BaseLogSender extends BaseLogHandler {
 }
 
 abstract class BaseDioLogSender extends BaseLogSender {
-  Future<void> sendLogEventsWithDio(
-      List<LogEntry> entries, Map<String, String> userProperties, CancelToken cancelToken);
+  Future<void> sendLogEventsWithDio(List<LogEntry> entries,
+      Map<String, String> userProperties, CancelToken cancelToken);
 
   @override
-  Stream<void> sendLogEvents(List<LogEntry> logEntries, Map<String, String> userProperties) {
+  Stream<void> sendLogEvents(
+      List<LogEntry> logEntries, Map<String, String> userProperties) {
     final CancelToken cancelToken = CancelToken();
     final streamController = StreamController<void>(onCancel: () {
       cancelToken.cancel();
@@ -118,7 +123,8 @@ abstract class BaseDioLogSender extends BaseLogSender {
           if (err.response != null) {
             message = 'response:' + err.response.data?.toString();
           }
-          _logger.warning('Error while sending logs. $message', err, stackTrace);
+          _logger.warning(
+              'Error while sending logs. $message', err, stackTrace);
           if (!streamController.isClosed) {
             streamController.addError(err, stackTrace);
             streamController.close();
@@ -133,7 +139,8 @@ abstract class BaseDioLogSender extends BaseLogSender {
 class LogEntry {
   LogEntry({@required this.ts, @required this.line, @required this.lineLabels});
 
-  static final DateFormat _dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  static final DateFormat _dateFormat =
+      DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
   final DateTime ts;
   final String line;
   final Map<String, String> lineLabels;
@@ -174,11 +181,13 @@ class SimpleJobQueue {
     final Completer<int> completer = Completer();
     int successfulJobs = 0;
 //    final job = _queue.removeFirst();
-    _currentStream =
-        Observable.concat(_queue.map((job) => job.runner(job).map((val) => job)).toList()).listen((successJob) {
+    _currentStream = Observable.concat(
+            _queue.map((job) => job.runner(job).map((val) => job)).toList())
+        .listen((successJob) {
       _queue.remove(successJob);
       successfulJobs++;
-      _logger.finest('Success job. remaining: ${_queue.length} - completed: $successfulJobs');
+      _logger.finest(
+          'Success job. remaining: ${_queue.length} - completed: $successfulJobs');
     }, onDone: () {
       _logger.finest('All jobs done.');
       _errorCount = 0;
@@ -195,7 +204,8 @@ class SimpleJobQueue {
       completer.completeError(error, stackTrace);
 
       const int errorWait = 10;
-      final minWait = Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
+      final minWait =
+          Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
       if (_lastError.difference(DateTime.now()).abs().compareTo(minWait) < 0) {
         _logger.finest('There was an error. waiting at least $minWait');
         if (_queue.length > maxQueueSize) {
