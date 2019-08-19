@@ -62,7 +62,7 @@ class RotatingFileAppender extends BaseLogAppender {
       if (length < rotateAtSizeBytes) {
         return false;
       }
-    } on FileSystemException catch(_) {
+    } on FileSystemException catch (_) {
       // if .length() throws an error, ignore it.
       return false;
     }
