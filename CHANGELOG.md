@@ -1,4 +1,4 @@
-## [0.2] - 2019-08-19
+## [0.2.0] - 2019-08-19
 
 * Renamed everything from `handler` to `appender`.
 * Major refactoring.
