@@ -19,5 +19,8 @@ dev_dependencies:
   test: ">=1.5.0 <2.0.0"
   pedantic: '>=1.5.0 <2.0.0'
 
+dependency_overrides:
+  pedantic: ^1.8.0+1
+
 # The following section is specific to Flutter.
 flutter:
