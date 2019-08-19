@@ -53,16 +53,16 @@ abstract class BaseLogSender extends BaseLogAppender {
       List<LogEntry> logEntries, Map<String, String> userProperties);
 
   Future<void> _triggerSendLogEvents() => Future(() {
-    final entries = _logEvents;
-    _logEvents = [];
-    _sendQueue.add(SimpleJobDef(
-      runner: (job) => sendLogEvents(entries, _userProperties),
-    ));
-    return _sendQueue.triggerJobRuns().then((val) {
-      _logger.finest('Sent log jobs: $val');
-      return null;
-    });
-  });
+        final entries = _logEvents;
+        _logEvents = [];
+        _sendQueue.add(SimpleJobDef(
+          runner: (job) => sendLogEvents(entries, _userProperties),
+        ));
+        return _sendQueue.triggerJobRuns().then((val) {
+          _logger.finest('Sent log jobs: $val');
+          return null;
+        });
+      });
 
   @override
   void handle(LogRecord record) {
@@ -126,7 +126,7 @@ class LogEntry {
   LogEntry({@required this.ts, @required this.line, @required this.lineLabels});
 
   static final DateFormat _dateFormat =
-  DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
   final DateTime ts;
   final String line;
   final Map<String, String> lineLabels;
@@ -168,7 +168,7 @@ class SimpleJobQueue {
     int successfulJobs = 0;
 //    final job = _queue.removeFirst();
     _currentStream = Observable.concat(
-        _queue.map((job) => job.runner(job).map((val) => job)).toList())
+            _queue.map((job) => job.runner(job).map((val) => job)).toList())
         .listen((successJob) {
       _queue.remove(successJob);
       successfulJobs++;
@@ -191,7 +191,7 @@ class SimpleJobQueue {
 
       const int errorWait = 10;
       final minWait =
-      Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
+          Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
       if (_lastError.difference(DateTime.now()).abs().compareTo(minWait) < 0) {
         _logger.finest('There was an error. waiting at least $minWait');
         if (_queue.length > maxQueueSize) {

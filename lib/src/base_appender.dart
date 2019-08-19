@@ -17,4 +17,3 @@ abstract class BaseLogAppender {
 
   void call(LogRecord record) => handle(record);
 }
-
