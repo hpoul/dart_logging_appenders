@@ -6,12 +6,12 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:remote_logging_handlers/src/base_logger.dart';
+import 'package:logging_appenders/src/base_appender.dart';
 
 final _logger = Logger('loki_logger');
 
-class LokiApiSender extends BaseDioLogSender {
-  LokiApiSender({
+class LokiApiAppender extends BaseDioLogSender {
+  LokiApiAppender({
     @required this.server,
     @required this.username,
     @required this.password,

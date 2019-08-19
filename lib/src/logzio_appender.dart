@@ -5,13 +5,13 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:remote_logging_handlers/src/base_logger.dart';
+import 'package:logging_appenders/src/base_appender.dart';
 
 // ignore: unused_element
 final _logger = Logger('loki_logger');
 
-class LogzIoApiSender extends BaseDioLogSender {
-  LogzIoApiSender({
+class LogzIoApiAppender extends BaseDioLogSender {
+  LogzIoApiAppender({
     @required this.apiToken,
     @required this.labels,
   });

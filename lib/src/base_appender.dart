@@ -5,15 +5,15 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:remote_logging_handlers/src/logrecord_formatter.dart';
+import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:rxdart/rxdart.dart';
 
 final _logger = Logger('base_logger');
 
 typedef LogRecordListener = void Function(LogRecord rec);
 
-abstract class BaseLogHandler {
-  const BaseLogHandler({this.formatter = const DefaultLogRecordFormatter()});
+abstract class BaseLogAppender {
+  const BaseLogAppender({this.formatter = const DefaultLogRecordFormatter()});
 
   final LogRecordFormatter formatter;
 
@@ -25,7 +25,7 @@ abstract class BaseLogHandler {
   void call(LogRecord record) => handle(record);
 }
 
-abstract class BaseLogSender extends BaseLogHandler {
+abstract class BaseLogSender extends BaseLogAppender {
   BaseLogSender(
       {LogRecordFormatter formatter = const DefaultLogRecordFormatter()})
       : super(formatter: formatter);

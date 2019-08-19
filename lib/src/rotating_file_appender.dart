@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:remote_logging_handlers/src/base_logger.dart';
-import 'package:remote_logging_handlers/src/logrecord_formatter.dart';
+import 'package:logging_appenders/src/base_appender.dart';
+import 'package:logging_appenders/src/logrecord_formatter.dart';
 
-class RotatingFileLogger extends BaseLogHandler {
-  RotatingFileLogger({
+class RotatingFileAppender extends BaseLogAppender {
+  RotatingFileAppender({
     LogRecordFormatter formatter = const DefaultLogRecordFormatter(),
     @required this.baseFilePath,
     this.keepRotateCount = 3,
@@ -78,8 +78,8 @@ class RotatingFileLogger extends BaseLogHandler {
 
 /// A wrapper LogHandler which will buffer log records until the future provided by
 /// the [builder] method has resolved.
-class AsyncInitializingLogHandler<T extends BaseLogHandler>
-    extends BaseLogHandler {
+class AsyncInitializingLogHandler<T extends BaseLogAppender>
+    extends BaseLogAppender {
   AsyncInitializingLogHandler({this.builder}) {
     this.builder().then((newLogHandler) {
       delegatedLogHandler = newLogHandler;

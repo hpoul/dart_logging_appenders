@@ -1,8 +1,8 @@
-name: remote_logging_handlers
-description: Logging handlers for logz and loki.
-version: 0.1.0+2
+name: logging_appenders
+description: Logging appenders for the logging package for print, file and remote (logz, loki).
+version: 0.2.0
 author: Herbert Poul <herbert@poul.at>
-homepage: https://github.com/AustrianApps/remote_logging_handlers
+homepage: https://github.com/hpoul/logging_appenders
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
