@@ -21,4 +21,27 @@ seconds. If network is down it will retry later. (with an ever increasing interv
 
 # Getting Started
 
+After installing package `logging` and `logging_appenders`:
+
+```dart
+import 'package:logging/logging.dart';
+import 'package:logging_appenders/logging_appenders.dart';
+
+final _logger = Logger('main');
+
+void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen(PrintAppender().logListener());
+  _logger.fine('Lorem ipsum');
+}
+```
+
+Outputs:
+
+```
+$ dart main.dart
+2019-08-19 15:36:03.827563 FINE main - Lorem ipsum
+```
+
+
 

@@ -2,7 +2,7 @@ name: logging_appenders
 description: Logging appenders for the dart logging package for print, file and remote (logz, loki).
 version: 0.2.0
 author: Herbert Poul <herbert@poul.at>
-homepage: https://github.com/hpoul/logging_appenders
+homepage: https://github.com/hpoul/dart_logging_appenders/
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
