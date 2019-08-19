@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 import 'package:meta/meta.dart';
-import 'package:logging_appenders/src/base_appender.dart';
 
 final _logger = Logger('loki_logger');
 
