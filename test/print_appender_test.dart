@@ -15,14 +15,19 @@ class MockLogRecordFormatter extends Mock implements LogRecordFormatter {
 }
 
 void main() {
+  setUpAll(() {
+    hierarchicalLoggingEnabled = true;
+  });
   test('dummy print logger test', () async {
     final printLog = <String>[];
-    final dummyLogger = StreamController<LogRecord>(sync: true);
+    final dummyLogger = Logger.detached('dummy');
+    dummyLogger.level = Level.ALL;
     final formatter = MockLogRecordFormatter();
     when(formatter.format(any)).thenReturn('mock');
+    final appender = PrintAppender(formatter: formatter);
     _overridePrint(printLog, () {
-      dummyLogger.stream.listen(PrintAppender(formatter: formatter).logListener());
-      dummyLogger.add(LogRecord(Level.INFO, 'foo', 'bar'));
+      appender.attachToLogger(dummyLogger);
+      dummyLogger.info('foo', 'bar');
     });
 
     expect(printLog, equals(['mock']));
