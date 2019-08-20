@@ -18,6 +18,7 @@ class RotatingFileAppender extends BaseLogAppender {
     @required this.baseFilePath,
     this.keepRotateCount = 3,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
+    this.rotateCheckInterval = const Duration(minutes: 5),
     this.clock = const Clock(),
   })  : assert(baseFilePath != null),
         super(formatter) {
@@ -29,19 +30,27 @@ class RotatingFileAppender extends BaseLogAppender {
     _maybeRotate();
   }
 
+  @visibleForTesting
+  static Logger get debugLogger => _logger;
+
   /// (Absolute) path to base file (ie. the current log file).
   final String baseFilePath;
+
   /// the number of rotated files to keep.
   /// e.g. if this is 3 we will create `filename`, `filename.1`, `filename.2`.
   final int keepRotateCount;
+
   /// The size in bytes we allow a file to grow before rotating it.
   final int rotateAtSizeBytes;
-  final Duration rotateCheckInterval = const Duration(minutes: 5);
+  final Duration rotateCheckInterval;
+
   /// how long to keep log file open. will be closed once this duration
   /// passed without a log message.
   final Duration keepOpenDuration = const Duration(minutes: 2);
   final Clock clock;
-  DateTime _nextRotateCheck;
+
+  // immediately check on rotate when creating appender.
+  DateTime _nextRotateCheck = DateTime.now();
   File _outputFile;
   IOSink _outputFileSink;
   Timer _closeAndFlushTimer;
@@ -57,10 +66,14 @@ class RotatingFileAppender extends BaseLogAppender {
   IOSink _getOpenOutputFileSink() =>
       _outputFileSink ??= _outputFile.openWrite(mode: FileMode.append)
         ..done.catchError((dynamic error, StackTrace stackTrace) {
+          print('error while writing to logging file.');
           _logger.warning(
               'Error while writing to logging file.', error, stackTrace);
           return Future<dynamic>.error(error, stackTrace);
         });
+
+  static int id = 0;
+  final int instanceId = id++;
 
   @override
   void handle(LogRecord record) {
@@ -69,16 +82,14 @@ class RotatingFileAppender extends BaseLogAppender {
       return;
     }
     try {
-      _getOpenOutputFileSink()
-        ..writeln(formatter.format(record))
-      // for now always call flush for every line.
-        ..flush();
+      _logger.fine('writing $record');
+      _getOpenOutputFileSink()..writeln(formatter.format(record));
     } catch (error, stackTrace) {
+      print('error while writing log $error $stackTrace');
       _logger.warning('Error while writing log.', error, stackTrace);
       _closeAndFlush();
       // try once more.
-      _getOpenOutputFileSink()
-        ..writeln(formatter.format(record));
+      _getOpenOutputFileSink()..writeln(formatter.format(record));
     }
     _closeAndFlushTimer?.cancel();
     _closeAndFlushTimer = Timer(keepOpenDuration, () {
@@ -96,27 +107,38 @@ class RotatingFileAppender extends BaseLogAppender {
 
   /// rotates the file, if it is larger than
   Future<bool> _maybeRotate() async {
-    if (_nextRotateCheck?.isAfter(clock.now()) == true) {
+    if (_nextRotateCheck?.isAfter(clock.now()) != false) {
       return false;
     }
-    _nextRotateCheck = clock.now().add(rotateCheckInterval);
+    _nextRotateCheck = null;
     try {
-      final length = await _outputFile.length();
-      if (length < rotateAtSizeBytes) {
+      try {
+        final length = await File(_outputFile.path).length();
+        if (length < rotateAtSizeBytes) {
+          return false;
+        }
+      } on FileSystemException catch (_) {
+        // if .length() throws an error, ignore it.
         return false;
+      } catch (e, stackTrace) {
+        _logger.warning('Error while checking file legnth.', e, stackTrace);
+        rethrow;
       }
-    } on FileSystemException catch (_) {
-      // if .length() throws an error, ignore it.
-      return false;
-    }
-    for (int i = keepRotateCount - 1; i >= 0; i--) {
-      final file = File(_fileNameForRotation(i));
-      if (file.existsSync()) {
-        await file.rename(_fileNameForRotation(i + 1));
+
+      for (int i = keepRotateCount - 1; i >= 0; i--) {
+        final file = File(_fileNameForRotation(i));
+        if (file.existsSync()) {
+          await file.rename(_fileNameForRotation(i + 1));
+        }
       }
+
+      final flushFuture = _closeAndFlush();
+      handle(LogRecord(Level.INFO, 'Rotated log.', '_'));
+      await flushFuture;
+      return true;
+    } finally {
+      _nextRotateCheck = clock.now().add(rotateCheckInterval);
     }
-    await _closeAndFlush();
-    return true;
   }
 
   Future<void> _closeAndFlush() async {
@@ -130,6 +152,11 @@ class RotatingFileAppender extends BaseLogAppender {
         _logger.warning('Error while flushing, closing stream.', e, stackTrace);
       }
     }
+  }
+
+  @visibleForTesting
+  Future<void> forceFlush() async {
+    await _closeAndFlush();
   }
 
   @override

@@ -19,6 +19,7 @@ dev_dependencies:
   test: ">=1.5.0 <2.0.0"
   pedantic: '>=1.5.0 <2.0.0'
   mockito: ^4.1.0
+  fake_async: ^1.0.1
 
 dependency_overrides:
   pedantic: ^1.8.0+1
