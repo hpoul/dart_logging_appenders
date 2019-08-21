@@ -57,7 +57,8 @@ class ColorFormatter extends LogRecordFormatter {
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
-    final color = _colorCache.putIfAbsent(rec.level, () => _colorForLevel(rec.level));
+    final color =
+        _colorCache.putIfAbsent(rec.level, () => _colorForLevel(rec.level));
     if (color != null) {
       sb.write(color.escape);
       wrappedFormatter.formatToStringBuffer(rec, sb);
@@ -87,8 +88,10 @@ class ColorFormatter extends LogRecordFormatter {
 
 class AnsiCombination {
   AnsiCombination._(this.escape, this.resetEscape);
-  AnsiCombination.combine(List<AnsiCode> codes) :
-      this._(codes.map((code) => code.escape).join(), codes.map((code) => code.reset?.escape).join());
+
+  AnsiCombination.combine(List<AnsiCode> codes)
+      : this._(codes.map((code) => code.escape).join(),
+            codes.map((code) => code.reset?.escape).join());
 
   final String escape;
   final String resetEscape;
