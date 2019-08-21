@@ -4,11 +4,11 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
-import 'package:logging/logging.dart';
+import 'package:logging_appenders/src/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 import 'package:meta/meta.dart';
 
-final _logger = Logger('loki_logger');
+final _logger = DummyLogger('logging_appenders.loki_appender');
 
 class LokiApiAppender extends BaseDioLogSender {
   LokiApiAppender({

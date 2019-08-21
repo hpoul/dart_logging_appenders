@@ -7,8 +7,8 @@ Native dart package for logging appenders usable with the [logging](https://pub.
 It currently includes appenders for:
 
 * Local Logging
-    * `print()` (PrintAppender)
-    * Rolling File Appender.
+    * `print()` [PrintAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/PrintAppender-class.html)
+    * Rolling File Appender. [RotatingFileAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/RotatingFileAppender-class.html)
 * Remote Logging
     * [logz.io](https://logz.io/) 
     * [loki](https://github.com/grafana/loki).

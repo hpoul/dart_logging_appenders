@@ -42,3 +42,10 @@ ios/Runner/GeneratedPluginRegistrant.*
 /android
 /pubspec.lock
 
+/coverage
+/test/.test_coverage.dart
+
+# For now editorconfig is doing nothing.
+/.editorconfig
+
+

@@ -1,3 +1,13 @@
+## 0.2.1+1
+
+* Make `LogzIoApiAppender` more configurable (host, type, bufferSize, etc.).
+
+## 0.2.1
+
+* Improved API, use `attachToLogger`.
+* Updated documentation, improved readme
+* More test coverage for `RotatingFileAppender`
+
 ## [0.2.0] - 2019-08-19
 
 * Renamed everything from `handler` to `appender`.

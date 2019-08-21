@@ -35,7 +35,6 @@ class MockLockAppender extends Mock implements BaseLogAppender {}
 void main() {
   hierarchicalLoggingEnabled = true;
   RotatingFileAppender.debugLogger.level = Level.ALL;
-  PrintAppender().attachToLogger(RotatingFileAppender.debugLogger);
 
   tempDirTest('simple write test', (dir) async {
     final logFile = path.join(dir.path, 'app.log');

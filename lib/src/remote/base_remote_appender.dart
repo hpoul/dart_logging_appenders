@@ -6,19 +6,28 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/base_appender.dart';
+import 'package:logging_appenders/src/dummy_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _logger = Logger('logging_appenders.base_remote_appender');
+final _logger = DummyLogger('logging_appenders.base_remote_appender');
 
+/// Base appender for services which should buffer log messages before
+/// handling them. (eg. because they use network traffic which make it
+/// unfeasible to send every log line on it's own).
+///
 abstract class BaseLogSender extends BaseLogAppender {
-  BaseLogSender(
-      {LogRecordFormatter formatter = const DefaultLogRecordFormatter()})
-      : super(formatter);
+  BaseLogSender({
+    LogRecordFormatter formatter,
+    int bufferSize,
+  })  : bufferSize = bufferSize ?? 500,
+        super(formatter);
 
   Map<String, String> _userProperties = {};
 
-  final int _bufferSize = 500;
+  /// Maximum number of log entries to buffer before triggering sending
+  /// of log entries. (default: 500)
+  final int bufferSize;
 
   List<LogEntry> _logEvents = <LogEntry>[];
   Timer _timer;
@@ -37,7 +46,7 @@ abstract class BaseLogSender extends BaseLogAppender {
     _timer?.cancel();
     _timer = null;
     _logEvents.add(log);
-    if (_logEvents.length > _bufferSize) {
+    if (_logEvents.length > bufferSize) {
       _triggerSendLogEvents();
     } else {
       _timer = Timer(const Duration(seconds: 10), () {
@@ -66,11 +75,6 @@ abstract class BaseLogSender extends BaseLogAppender {
 
   @override
   void handle(LogRecord record) {
-    // do not print our own logging lines, kind of recursive.
-    if (record.loggerName == _logger.fullName &&
-        record.level.value < Level.FINE.value) {
-      return;
-    }
     final message = formatter.format(record);
     final lineLabels = {
       'lvl': record.level.name,
@@ -86,7 +90,13 @@ abstract class BaseLogSender extends BaseLogAppender {
   Future<void> flush() => _triggerSendLogEvents();
 }
 
+/// Helper base class to handle Dio errors during network requests.
 abstract class BaseDioLogSender extends BaseLogSender {
+  BaseDioLogSender({
+    LogRecordFormatter formatter,
+    int bufferSize,
+  }) : super(formatter: formatter, bufferSize: bufferSize);
+
   Future<void> sendLogEventsWithDio(List<LogEntry> entries,
       Map<String, String> userProperties, CancelToken cancelToken);
 

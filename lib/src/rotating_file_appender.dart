@@ -4,10 +4,11 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/base_appender.dart';
+import 'package:logging_appenders/src/dummy_logger.dart';
 import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:meta/meta.dart';
 
-final _logger = Logger('logging_appenders.rotating_file_appender');
+final _logger = DummyLogger('logging_appenders.rotating_file_appender');
 
 /// A file appender which will rotate the log file once it reaches
 /// [rotateAtSizeBytes] bytes. Will keep [keepRotateCount] number of
@@ -85,7 +86,6 @@ class RotatingFileAppender extends BaseLogAppender {
       return;
     }
     try {
-      _logger.fine('writing $record');
       _getOpenOutputFileSink()..writeln(formatter.format(record));
     } catch (error, stackTrace) {
       print('error while writing log $error $stackTrace');
