@@ -33,7 +33,7 @@ final _logger = Logger('main');
 
 void main() {
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(PrintAppender().logListener());
+  PrintAppender()..attachToLogger(Logger.root);
   _logger.fine('Lorem ipsum');
 }
 ```

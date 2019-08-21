@@ -11,11 +11,14 @@ abstract class BaseLogAppender {
       : formatter = formatter ?? const DefaultLogRecordFormatter();
 
   final LogRecordFormatter formatter;
-  final List<StreamSubscription<dynamic>> _subscriptions = <StreamSubscription<dynamic>>[];
+  final List<StreamSubscription<dynamic>> _subscriptions =
+      <StreamSubscription<dynamic>>[];
 
   @protected
+  @visibleForTesting
   void handle(LogRecord record);
 
+  @protected
   LogRecordListener logListener() => (LogRecord record) => handle(record);
 
   void attachToLogger(Logger logger) {
@@ -30,7 +33,8 @@ abstract class BaseLogAppender {
   }
 
   Future<void> _cancelSubscriptions() async {
-    final futures = _subscriptions.map((sub) => sub.cancel()).toList(growable: false);
+    final futures =
+        _subscriptions.map((sub) => sub.cancel()).toList(growable: false);
     _subscriptions.clear();
     await Future.wait<dynamic>(futures);
   }

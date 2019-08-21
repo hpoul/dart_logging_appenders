@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
+import 'package:logging_appenders/src/base_appender.dart';
 import 'package:meta/meta.dart';
+import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -25,6 +29,8 @@ void tempDirTest<T>(
 
 LogRecord _logRecord(String message) =>
     LogRecord(Level.FINE, message, 'test_logger');
+
+class MockLockAppender extends Mock implements BaseLogAppender {}
 
 void main() {
   hierarchicalLoggingEnabled = true;
@@ -59,13 +65,31 @@ void main() {
     appender.handle(_logRecord('bar'));
     await appender.forceFlush();
     appender.handle(_logRecord('baz'));
-    await Future<dynamic>.delayed(Duration(milliseconds: 100));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     expect(File(logFile).existsSync(), true);
     expect(File(logFile + '.1').existsSync(), true);
     appender.handle(_logRecord('bar'));
 //    }, initialTime: DateTime(2018));
-    await Future<dynamic>.delayed(Duration(milliseconds: 100));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     await _debugFiles(dir);
+  });
+
+  tempDirTest('test async initialization', (dir) async {
+    fakeAsync((async) {
+      final logAppenderCompleter = Completer<BaseLogAppender>();
+      final mockAppender = MockLockAppender();
+      final appender = AsyncInitializingLogHandler(
+        builder: () async => await logAppenderCompleter.future,
+      );
+
+      appender.handle(_logRecord('foo'));
+      async.flushMicrotasks();
+      verifyNever(mockAppender.handle(any));
+
+      logAppenderCompleter.complete(mockAppender);
+      async.flushMicrotasks();
+      verify(mockAppender.handle(any)).called(1);
+    });
   });
 }
 

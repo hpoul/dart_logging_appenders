@@ -12,6 +12,9 @@ final _logger = Logger('logging_appenders.rotating_file_appender');
 /// A file appender which will rotate the log file once it reaches
 /// [rotateAtSizeBytes] bytes. Will keep [keepRotateCount] number of
 /// files.
+/// If the [baseFilePath] cannot be calculated synchronously you can use
+/// a [AsyncInitializingLogHandler] to buffer log messages until the
+/// [baseFilePath] is ready.
 class RotatingFileAppender extends BaseLogAppender {
   RotatingFileAppender({
     LogRecordFormatter formatter,
@@ -172,6 +175,7 @@ class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
   AsyncInitializingLogHandler({this.builder}) : super(null) {
     this.builder().then((newLogHandler) {
+      assert(newLogHandler != null);
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords.forEach(handle);
       _bufferedLogRecords = null;
