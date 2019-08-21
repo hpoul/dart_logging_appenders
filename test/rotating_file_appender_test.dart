@@ -71,6 +71,7 @@ void main() {
 //    }, initialTime: DateTime(2018));
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     await _debugFiles(dir);
+    await appender.dispose();
   });
 
   tempDirTest('test async initialization', (dir) async {

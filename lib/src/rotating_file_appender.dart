@@ -145,6 +145,8 @@ class RotatingFileAppender extends BaseLogAppender {
   }
 
   Future<void> _closeAndFlush() async {
+    _closeAndFlushTimer?.cancel();
+    _closeAndFlushTimer = null;
     if (_outputFileSink != null) {
       try {
         final oldSink = _outputFileSink;

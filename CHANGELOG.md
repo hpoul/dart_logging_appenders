@@ -1,3 +1,7 @@
+## TODO
+
+* Correctly dispose close timer.
+
 ## 0.2.1+1
 
 * Make `LogzIoApiAppender` more configurable (host, type, bufferSize, etc.).
