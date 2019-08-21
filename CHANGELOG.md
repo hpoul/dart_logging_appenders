@@ -1,6 +1,7 @@
 ## 0.2.1+1
 
 * Make `LogzIoApiAppender` more configurable (host, type, bufferSize, etc.).
+* Make internal logging levels configurable, to help debugging the Appenders themselves.
 
 ## 0.2.1
 

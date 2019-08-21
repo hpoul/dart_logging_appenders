@@ -1,7 +1,3 @@
-
-
-import 'dart:math';
-
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
