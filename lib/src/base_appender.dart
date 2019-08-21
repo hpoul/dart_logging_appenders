@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:logging/logging.dart';
-import 'package:logging_appenders/src/dummy_logger.dart';
+import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:meta/meta.dart';
 

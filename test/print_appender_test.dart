@@ -1,9 +1,9 @@
-import 'dart:async';
-
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+
+import 'test_utils.dart';
 
 class FakeLogRecordFormatter extends LogRecordFormatter {
   @override
@@ -17,6 +17,7 @@ class MockLogRecordFormatter extends Mock implements LogRecordFormatter {
 void main() {
   setUpAll(() {
     hierarchicalLoggingEnabled = true;
+    LoggingAppenders.internalLogLevel = Level.ALL;
   });
   test('dummy print logger test', () async {
     final printLog = <String>[];
@@ -25,7 +26,7 @@ void main() {
     final formatter = MockLogRecordFormatter();
     when(formatter.format(any)).thenReturn('mock');
     final appender = PrintAppender(formatter: formatter);
-    _overridePrint(printLog, () {
+    TestUtils.overridePrint(printLog, () {
       appender.attachToLogger(dummyLogger);
       dummyLogger.info('foo', 'bar');
     });
@@ -35,12 +36,3 @@ void main() {
   });
 }
 
-T _overridePrint<T>(List<String> log, T Function() testFn) {
-  final spec = ZoneSpecification(
-      print: (_, __, ___, String msg) {
-        // Add to log instead of printing to stdout
-        log.add(msg);
-      }
-  );
-  return Zone.current.fork(specification: spec).run(testFn);
-}

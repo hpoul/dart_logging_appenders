@@ -1,6 +1,8 @@
 # logging_appenders
 
 [![Pub](https://img.shields.io/pub/v/logging_appenders.svg?color=green)](https://pub.dartlang.org/packages/logging_appenders)
+[![codecov](https://codecov.io/gh/hpoul/dart_logging_appenders/branch/master/graph/badge.svg)](https://codecov.io/gh/hpoul/dart_logging_appenders)
+
 
 Native dart package for logging appenders usable with the [logging](https://pub.dartlang.org/packages/logging) package.
 

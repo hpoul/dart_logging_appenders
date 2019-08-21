@@ -9,9 +9,13 @@ import 'package:logging_appenders/logging_appenders.dart';
 /// trigger the log messages back into the real logger. but this just sounds
 /// like a death trap for infinite recursions).
 class DummyLogger implements Logger {
-  DummyLogger(this.name);
+  factory DummyLogger(String name) {
+    return _loggers.putIfAbsent(name, () => DummyLogger._named(name));
+  }
+  DummyLogger._named(this.name);
 
   static Level internalLogLevel;
+  static final Map<String, DummyLogger> _loggers = <String, DummyLogger>{};
 
   @override
   Level get level => internalLogLevel ?? Level.OFF;
