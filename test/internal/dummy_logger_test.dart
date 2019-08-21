@@ -19,6 +19,8 @@ void _logAllLevels(DummyLogger dummyLogger) {
 void main() {
   test('changing levels', () async {
     final log = <String>[];
+    // when null it should default to OFF
+    LoggingAppenders.internalLogLevel = null;
     final dummyLogger = DummyLogger('foo');
     TestUtils.overridePrint(log, () {
       _logAllLevels(dummyLogger);

@@ -9,11 +9,10 @@ typedef LogRecordListener = void Function(LogRecord rec);
 
 /// Some global configuration for `logging_appenders` package.
 class LoggingAppenders {
-
   /// Allows changing log level for internal "dummy" loggers
   /// (will always only `print()`)
-  static set internalLogLevel(Level level) => DummyLogger.internalLogLevel = level;
-
+  static set internalLogLevel(Level level) =>
+      DummyLogger.internalLogLevel = level;
 }
 
 abstract class BaseLogAppender {
