@@ -47,5 +47,14 @@ $ dart main.dart
 2019-08-19 15:36:03.827563 FINE main - Lorem ipsum
 ```
 
+# Color Formatter
 
+```dart
+    PrintAppender(formatter: const ColorFormatter())
+        ..attachToLogger(Logger.root);
+```
+
+Produces:
+
+![Color Output Screenshot](doc/screenshot.png)
 

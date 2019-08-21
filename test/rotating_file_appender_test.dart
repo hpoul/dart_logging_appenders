@@ -11,6 +11,8 @@ import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
+import 'test_utils.dart';
+
 @isTest
 void tempDirTest<T>(
     String description, Future<T> Function(Directory dir) callback) {
@@ -27,8 +29,7 @@ void tempDirTest<T>(
   });
 }
 
-LogRecord _logRecord(String message) =>
-    LogRecord(Level.FINE, message, 'test_logger');
+LogRecord _logRecord(String message) => TestUtils.logRecord(message);
 
 class MockLockAppender extends Mock implements BaseLogAppender {}
 

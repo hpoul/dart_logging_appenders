@@ -1,5 +1,8 @@
-## TODO
+## 0.2.2
 
+* Added a `ColorFormatter` when outputting to interactive terminal.
+    * If `stdout.supportsAnsiEscapes` returns true, the `PrintAppender`
+      will default to `ColorFormatter`
 * Correctly dispose close timer.
 
 ## 0.2.1+1
