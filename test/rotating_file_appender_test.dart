@@ -63,8 +63,10 @@ void main() {
     appender.handle(_logRecord('foo'));
     appender.handle(_logRecord('bar'));
     await appender.forceFlush();
+    expect(appender.getAllLogFiles(), hasLength(1));
     appender.handle(_logRecord('baz'));
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
+    expect(appender.getAllLogFiles(), hasLength(2));
     expect(File(logFile).existsSync(), true);
     expect(File(logFile + '.1').existsSync(), true);
     appender.handle(_logRecord('bar'));
