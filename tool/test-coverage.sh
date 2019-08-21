@@ -12,3 +12,5 @@ fail=false
 pub global run test_coverage || fail=true
 echo "fail=$fail"
 bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
+
+test "$fail" == "true" && exit 1
