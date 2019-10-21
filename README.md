@@ -58,3 +58,23 @@ Produces:
 
 ![Color Output Screenshot](doc/screenshot.png)
 
+
+# Remote Appenders
+
+## Appender for logz.io
+
+```dart
+  final _logzIoApiSender = LogzIoApiAppender(
+    // you can find your API key and the required URL from 
+    // the logz.io dashboard: https://app-eu.logz.io/#/dashboard/settings/general
+    apiToken: 'MY API KEY',
+    url: 'https://listener-eu.logz.io:8071/',
+    labels: {'app': 'MyApp', 'os': Platform.operatingSystem},
+  );
+  _logzIoApiSender.attachToLogger(Logger.root);
+  
+  
+  // ...
+  If you know that you no longer need the appender. it's good to dispose it:
+  _logzIoApiSender.dispose();
+```
