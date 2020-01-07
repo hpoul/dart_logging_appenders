@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Upgraded to rxdart 0.23
+
 ## 0.2.2
 
 * Added a `ColorFormatter` when outputting to interactive terminal.

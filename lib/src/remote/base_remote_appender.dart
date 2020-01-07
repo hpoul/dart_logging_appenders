@@ -177,7 +177,7 @@ class SimpleJobQueue {
     final Completer<int> completer = Completer();
     int successfulJobs = 0;
 //    final job = _queue.removeFirst();
-    _currentStream = Observable.concat(
+    _currentStream = Rx.concat(
             _queue.map((job) => job.runner(job).map((val) => job)).toList())
         .listen((successJob) {
       _queue.remove(successJob);
