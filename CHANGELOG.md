@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Upgrade to dio 3.x
+
 ## 0.3.0
 
 * Upgraded to rxdart 0.23

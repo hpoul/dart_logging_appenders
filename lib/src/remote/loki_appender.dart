@@ -76,7 +76,8 @@ class LokiApiAppender extends BaseDioLogSender {
               HttpHeaders.authorizationHeader: authHeader,
             },
             contentType: ContentType(
-                ContentType.json.primaryType, ContentType.json.subType),
+                    ContentType.json.primaryType, ContentType.json.subType)
+                .value,
           ),
         )
         .then(
