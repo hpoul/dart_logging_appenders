@@ -103,7 +103,7 @@ abstract class BaseDioLogSender extends BaseLogSender {
   @override
   Stream<void> sendLogEvents(
       List<LogEntry> logEntries, Map<String, String> userProperties) {
-    final CancelToken cancelToken = CancelToken();
+    final cancelToken = CancelToken();
     final streamController = StreamController<void>(onCancel: () {
       cancelToken.cancel();
     });
@@ -114,7 +114,7 @@ abstract class BaseDioLogSender extends BaseLogSender {
           streamController.close();
         }
       }).catchError((dynamic err, StackTrace stackTrace) {
-        String message = err.runtimeType.toString();
+        var message = err.runtimeType.toString();
         if (err is DioError) {
           if (err.response != null) {
             message = 'response:' + err.response.data?.toString();
@@ -174,8 +174,8 @@ class SimpleJobQueue {
       return Future.value(0);
     }
     _logger.finest('Triggering Job Runs. ${_queue.length}');
-    final Completer<int> completer = Completer();
-    int successfulJobs = 0;
+    final completer = Completer<int>();
+    var successfulJobs = 0;
 //    final job = _queue.removeFirst();
     _currentStream = Rx.concat(
             _queue.map((job) => job.runner(job).map((val) => job)).toList())
@@ -199,7 +199,7 @@ class SimpleJobQueue {
       _currentStream = null;
       completer.completeError(error, stackTrace);
 
-      const int errorWait = 10;
+      const errorWait = 10;
       final minWait =
           Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
       if (_lastError.difference(DateTime.now()).abs().compareTo(minWait) < 0) {

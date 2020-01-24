@@ -52,7 +52,7 @@ class LokiApiAppender extends BaseDioLogSender {
       Map<String, String> userProperties, CancelToken cancelToken) {
     final jsonObject =
         LokiPushBody([LokiStream(labelsString, entries)]).toJson();
-    final String jsonBody = json.encode(jsonObject, toEncodable: (dynamic obj) {
+    final jsonBody = json.encode(jsonObject, toEncodable: (dynamic obj) {
       if (obj is LogEntry) {
         return {
           'ts': _dateFormat.format(obj.ts),
