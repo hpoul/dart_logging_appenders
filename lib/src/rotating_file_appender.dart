@@ -128,7 +128,7 @@ class RotatingFileAppender extends BaseLogAppender {
         rethrow;
       }
 
-      for (int i = keepRotateCount - 1; i >= 0; i--) {
+      for (var i = keepRotateCount - 1; i >= 0; i--) {
         final file = File(_fileNameForRotation(i));
         if (file.existsSync()) {
           await file.rename(_fileNameForRotation(i + 1));
@@ -176,7 +176,7 @@ class RotatingFileAppender extends BaseLogAppender {
 class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
   AsyncInitializingLogHandler({this.builder}) : super(null) {
-    this.builder().then((newLogHandler) {
+    builder().then((newLogHandler) {
       assert(newLogHandler != null);
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords.forEach(handle);

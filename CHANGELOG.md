@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Expose `BaseLogSender` and similar classes required to build custom log senders.
+
 ## 0.4.0
 
 * Upgrade to dio 3.x
