@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Expose `BaseLogSender` and similar classes required to build custom log senders.
+
 ## 0.3.0
 
 * Upgraded to rxdart 0.23
