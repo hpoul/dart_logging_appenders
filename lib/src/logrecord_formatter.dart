@@ -36,7 +36,8 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
         '${rec.loggerName} - ${rec.message}');
 
     if (rec.error != null) {
-      sb.writeln('### ');
+      sb.writeln();
+      sb.write('### ');
       sb.write(rec.error);
     }
     // ignore: avoid_as
