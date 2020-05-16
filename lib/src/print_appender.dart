@@ -1,9 +1,10 @@
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/base_appender.dart';
-import 'package:logging_appenders/src/logrecord_formatter.dart'
-    if (dart.library.io) 'package:logging_appenders/src/logrecord_formatter_io.dart';
+import 'package:logging_appenders/src/logrecord_formatter.dart';
 
-import 'internal/print_appender_default.dart';
+import 'package:logging_appenders/src/internal/print_appender_default.dart'
+    if (dart.library.io) 'package:logging_appenders/src/'
+        'internal/print_appender_io.dart';
 
 /// Appender which outputs all log records using the given formatter to
 /// stdout using `print()`.

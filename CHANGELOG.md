@@ -1,4 +1,4 @@
-## 0.4.2
+## 0.4.2 (and 0.4.2+1)
 
 * Separated PrintAppender initializer into a default and a dart:io file, so
   to remove dependency on `dart:io`.
