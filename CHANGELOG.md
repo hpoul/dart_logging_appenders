@@ -1,3 +1,7 @@
+## 0.4.2+2
+
+* Slightly improve the default formatting of errors/stack traces.
+
 ## 0.4.2 (and 0.4.2+1)
 
 * Separated PrintAppender initializer into a default and a dart:io file, so

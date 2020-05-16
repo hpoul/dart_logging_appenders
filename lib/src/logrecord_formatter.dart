@@ -36,12 +36,14 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
         '${rec.loggerName} - ${rec.message}');
 
     if (rec.error != null) {
+      sb.writeln('### ');
       sb.write(rec.error);
     }
     // ignore: avoid_as
     final stackTrace = rec.stackTrace ??
         (rec.error is Error ? (rec.error as Error).stackTrace : null);
     if (stackTrace != null) {
+      sb.writeln();
       sb.write(stackTrace);
     }
     return sb;
