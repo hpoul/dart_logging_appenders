@@ -2,6 +2,7 @@
   <dictionary name="herbert">
     <words>
       <w>appenders</w>
+      <w>logrecord</w>
       <w>performant</w>
     </words>
   </dictionary>

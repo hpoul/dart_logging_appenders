@@ -1,3 +1,9 @@
+## 0.4.2
+
+* Separated PrintAppender initializer into a default and a dart:io file, so
+  to remove dependency on `dart:io`.
+* Created a `PrintAppender.setupLogging()` method which configures the root logger.
+
 ## 0.4.1
 
 * Expose `BaseLogSender` and similar classes required to build custom log senders.

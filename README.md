@@ -3,8 +3,9 @@
 [![Pub](https://img.shields.io/pub/v/logging_appenders.svg?color=green)](https://pub.dartlang.org/packages/logging_appenders)
 [![codecov](https://codecov.io/gh/hpoul/dart_logging_appenders/branch/master/graph/badge.svg)](https://codecov.io/gh/hpoul/dart_logging_appenders)
 
-
 Native dart package for logging appenders usable with the [logging](https://pub.dartlang.org/packages/logging) package.
+
+![Color Output Screenshot](doc/screenshot-small.png)
 
 It currently includes appenders for:
 
@@ -34,8 +35,12 @@ import 'package:logging_appenders/logging_appenders.dart';
 final _logger = Logger('main');
 
 void main() {
-  Logger.root.level = Level.ALL;
-  PrintAppender()..attachToLogger(Logger.root);
+  PrintAppender.setupLogging();
+
+  // The above code is the same as:
+  // Logger.root.level = Level.ALL;
+  // PrintAppender()..attachToLogger(Logger.root);
+
   _logger.fine('Lorem ipsum');
 }
 ```
