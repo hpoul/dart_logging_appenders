@@ -15,8 +15,9 @@ class PrintAppender extends BaseLogAppender {
   /// Will setup the root logger with the given level and appends
   /// a new PrintAppender to it.
   static PrintAppender setupLogging({Level level = Level.ALL}) {
+    assert(level != null);
     Logger.root.clearListeners();
-    Logger.root.level = Level.ALL;
+    Logger.root.level = level;
     return PrintAppender()..attachToLogger(Logger.root);
   }
 

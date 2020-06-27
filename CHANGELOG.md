@@ -1,3 +1,7 @@
+## 0.4.2+3
+
+* fix passing along level on PrintAppender.setupLogging
+
 ## 0.4.2+2
 
 * Slightly improve the default formatting of errors/stack traces.
