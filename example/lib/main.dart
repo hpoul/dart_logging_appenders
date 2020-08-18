@@ -5,8 +5,10 @@ final _logger = Logger('example');
 
 void main() {
   Logger.root.level = Level.ALL;
-  final appender = PrintAppender(formatter: const ColorFormatter())
-    ..attachToLogger(Logger.root);
+  final appender = PrintAppender.setupLogging();
+//  Equal to:
+//  final appender = PrintAppender(formatter: const ColorFormatter())
+//    ..attachToLogger(Logger.root);
   _logger.fine('Lorem ipsum');
   _logger.info('An important info message');
   _logger.severe('This is bad.');

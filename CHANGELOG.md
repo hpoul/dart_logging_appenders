@@ -1,3 +1,7 @@
+## 0.4.2+4
+
+* Add error `runtimeType` to default log output.
+
 ## 0.4.2+3
 
 * fix passing along level on PrintAppender.setupLogging

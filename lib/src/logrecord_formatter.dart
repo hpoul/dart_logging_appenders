@@ -37,7 +37,7 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
 
     if (rec.error != null) {
       sb.writeln();
-      sb.write('### ');
+      sb.write('### ${rec.error?.runtimeType}: ');
       sb.write(rec.error);
     }
     // ignore: avoid_as
