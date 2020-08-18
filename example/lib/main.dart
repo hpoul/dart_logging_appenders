@@ -5,7 +5,7 @@ final _logger = Logger('example');
 
 void main() {
   Logger.root.level = Level.ALL;
-  final appender = PrintAppender.setupLogging();
+  final appender = PrintAppender.setupLogging(stderrLevel: Level.SEVERE);
 //  Equal to:
 //  final appender = PrintAppender(formatter: const ColorFormatter())
 //    ..attachToLogger(Logger.root);

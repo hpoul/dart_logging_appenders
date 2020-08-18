@@ -1,3 +1,11 @@
+## 0.4.2+5
+
+* Improve documentation
+* Add possibility to log to stderr.
+  ```dart
+  PrintAppender.setupLogging(stderrLevel: Level.SEVERE);
+  ```
+
 ## 0.4.2+4
 
 * Add error `runtimeType` to default log output.

@@ -63,6 +63,14 @@ Produces:
 
 ![Color Output Screenshot](doc/screenshot.png)
 
+# Logging to stderr
+
+When using `dart:io` (ie. command line apps) it is possible to
+define which log levels should go to `stderr` instead of `stdout`:
+
+```
+PrintAppender.setupLogging(stderrLevel: Level.SEVERE);
+```
 
 # Remote Appenders
 

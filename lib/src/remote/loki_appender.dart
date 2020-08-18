@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 
 final _logger = DummyLogger('logging_appenders.loki_appender');
 
+/// Appender used to push logs to [Loki](https://github.com/grafana/loki).
 class LokiApiAppender extends BaseDioLogSender {
   LokiApiAppender({
     @required this.server,

@@ -15,6 +15,8 @@ class LoggingAppenders {
       DummyLogger.internalLogLevel = level;
 }
 
+/// Base class for log appenders to handle subscriptions to specific
+/// loggers as well as [dispose]ing them.
 abstract class BaseLogAppender {
   BaseLogAppender(LogRecordFormatter formatter)
       : formatter = formatter ?? const DefaultLogRecordFormatter();

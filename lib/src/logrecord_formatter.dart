@@ -2,9 +2,12 @@ import 'package:io/ansi.dart' as ansi;
 import 'package:io/ansi.dart';
 import 'package:logging/logging.dart';
 
+/// Base class for formatters which are responsible for converting
+/// [LogRecord]s to strings.
 abstract class LogRecordFormatter {
   const LogRecordFormatter();
 
+  /// Should write the formatted output of [rec] into [sb].
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb);
 
   String format(LogRecord rec) =>
@@ -27,6 +30,8 @@ class BlockFormatter extends LogRecordFormatter {
   }
 }
 
+/// Opinionated log formatter which will give a decent format of [LogRecord]
+/// and adds stack trace and error messages if they are available.
 class DefaultLogRecordFormatter extends LogRecordFormatter {
   const DefaultLogRecordFormatter();
 
@@ -51,12 +56,14 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
   }
 }
 
+/// dart:io logger which adds ansi escape characters to set the color
+/// of the output depending on log level.
 class ColorFormatter extends LogRecordFormatter {
   const ColorFormatter(
       [this.wrappedFormatter = const DefaultLogRecordFormatter()]);
 
   final LogRecordFormatter wrappedFormatter;
-  static final Map<Level, AnsiCombination> _colorCache = {};
+  static final Map<Level, _AnsiCombination> _colorCache = {};
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
@@ -72,27 +79,27 @@ class ColorFormatter extends LogRecordFormatter {
     return sb;
   }
 
-  AnsiCombination _colorForLevel(Level level) {
+  _AnsiCombination _colorForLevel(Level level) {
     if (level <= Level.FINE) {
-      return AnsiCombination.combine([ansi.styleDim, ansi.lightGray]);
+      return _AnsiCombination.combine([ansi.styleDim, ansi.lightGray]);
     }
     if (level <= Level.INFO) {
       return null;
     }
     if (level <= Level.WARNING) {
-      return AnsiCombination.combine([ansi.magenta]);
+      return _AnsiCombination.combine([ansi.magenta]);
     }
     if (level <= Level.SEVERE) {
-      return AnsiCombination.combine([ansi.red]);
+      return _AnsiCombination.combine([ansi.red]);
     }
-    return AnsiCombination.combine([ansi.red, ansi.styleBold]);
+    return _AnsiCombination.combine([ansi.red, ansi.styleBold]);
   }
 }
 
-class AnsiCombination {
-  AnsiCombination._(this.escape, this.resetEscape);
+class _AnsiCombination {
+  _AnsiCombination._(this.escape, this.resetEscape);
 
-  AnsiCombination.combine(List<AnsiCode> codes)
+  _AnsiCombination.combine(List<AnsiCode> codes)
       : this._(codes.map((code) => code.escape).join(),
             codes.map((code) => code.reset?.escape).join());
 

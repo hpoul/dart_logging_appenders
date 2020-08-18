@@ -48,4 +48,4 @@ ios/Runner/GeneratedPluginRegistrant.*
 # For now editorconfig is doing nothing.
 /.editorconfig
 
-
+/doc/api
