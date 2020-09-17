@@ -1,3 +1,7 @@
+## 0.4.3-dev.1
+
+* Remove dependency on rxdart.
+
 ## 0.4.2+5
 
 * Improve documentation

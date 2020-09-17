@@ -1,6 +1,6 @@
 name: logging_appenders
 description: Logging appenders for the dart logging package for print, file and remote (logz, loki).
-version: 0.4.2+5
+version: 0.4.3-dev.1
 homepage: https://github.com/hpoul/dart_logging_appenders/
 
 environment:
@@ -10,7 +10,6 @@ dependencies:
   meta: '>=1.0.0 <2.0.0'
   logging: '>=0.11.3+2 <1.0.0'
   dio: '>=3.0.0 <4.0.0'
-  rxdart: '>=0.23.0 <1.0.0'
   intl: '>=0.15.0 <1.0.0'
   clock: '>=1.0.0 <2.0.0'
   io: '>=0.3.0 <1.0.0' # For Ansi colors.

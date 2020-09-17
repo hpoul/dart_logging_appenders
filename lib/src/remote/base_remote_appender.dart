@@ -8,7 +8,6 @@ import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/base_appender.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
 
 final _logger = DummyLogger('logging_appenders.base_remote_appender');
 
@@ -159,7 +158,7 @@ class SimpleJobQueue {
 
   final Queue<SimpleJobDef> _queue = Queue<SimpleJobDef>();
 
-  StreamSubscription<SimpleJobDef> _currentStream;
+  StreamSubscription<void> _currentStream;
 
   int _errorCount = 0;
   DateTime _lastError;
@@ -177,8 +176,12 @@ class SimpleJobQueue {
     final completer = Completer<int>();
     var successfulJobs = 0;
 //    final job = _queue.removeFirst();
-    _currentStream = Rx.concat(
-            _queue.map((job) => job.runner(job).map((val) => job)).toList())
+    _currentStream = (() async* {
+      for (final job in _queue) {
+        await job.runner(job).drain(null);
+        yield job;
+      }
+    })()
         .listen((successJob) {
       _queue.remove(successJob);
       successfulJobs++;
