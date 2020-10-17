@@ -56,7 +56,7 @@ class LokiApiAppender extends BaseDioLogSender {
     final jsonBody = json.encode(jsonObject, toEncodable: (dynamic obj) {
       if (obj is LogEntry) {
         return {
-          'ts': _dateFormat.format(obj.ts),
+          'ts': _dateFormat.format(obj.ts.toUtc()),
           'line': obj.lineLabels.entries
                   .map((entry) =>
                       '${entry.key}=${_encodeLineLabelValue(entry.value)}')
