@@ -1,3 +1,8 @@
+## 0.4.3
+
+* Remove dependency on rxdart.
+* Loki: use UTC for all timestamps (thanks @hsmade) 
+
 ## 0.4.3-dev.1
 
 * Remove dependency on rxdart.
