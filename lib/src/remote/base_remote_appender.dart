@@ -177,8 +177,11 @@ class SimpleJobQueue {
     var successfulJobs = 0;
 //    final job = _queue.removeFirst();
     _currentStream = (() async* {
-      for (final job in _queue) {
+      final copyQueue = _queue.map((job) async {
         await job.runner(job).drain(null);
+        return job;
+      });
+      for (final job in copyQueue) {
         yield job;
       }
     })()
