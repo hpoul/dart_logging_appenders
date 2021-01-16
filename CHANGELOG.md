@@ -1,3 +1,7 @@
+## 0.4.3+1
+
+* Fix concurrent modification #9 thanks @rvasqz86
+
 ## 0.4.3
 
 * Remove dependency on rxdart.
