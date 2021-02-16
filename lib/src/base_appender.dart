@@ -11,14 +11,14 @@ typedef LogRecordListener = void Function(LogRecord rec);
 class LoggingAppenders {
   /// Allows changing log level for internal "dummy" loggers
   /// (will always only `print()`)
-  static set internalLogLevel(Level level) =>
+  static set internalLogLevel(Level? level) =>
       DummyLogger.internalLogLevel = level;
 }
 
 /// Base class for log appenders to handle subscriptions to specific
 /// loggers as well as [dispose]ing them.
 abstract class BaseLogAppender {
-  BaseLogAppender(LogRecordFormatter formatter)
+  BaseLogAppender(LogRecordFormatter? formatter)
       : formatter = formatter ?? const DefaultLogRecordFormatter();
 
   final LogRecordFormatter formatter;

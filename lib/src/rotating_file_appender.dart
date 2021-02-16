@@ -18,8 +18,8 @@ final _logger = DummyLogger('logging_appenders.rotating_file_appender');
 /// [baseFilePath] is ready.
 class RotatingFileAppender extends BaseLogAppender {
   RotatingFileAppender({
-    LogRecordFormatter formatter,
-    @required this.baseFilePath,
+    LogRecordFormatter? formatter,
+    required this.baseFilePath,
     this.keepRotateCount = 3,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
     this.rotateCheckInterval = const Duration(minutes: 5),
@@ -54,10 +54,10 @@ class RotatingFileAppender extends BaseLogAppender {
   final Clock clock;
 
   // immediately check on rotate when creating appender.
-  DateTime _nextRotateCheck = DateTime.now();
-  File _outputFile;
-  IOSink _outputFileSink;
-  Timer _closeAndFlushTimer;
+  DateTime? _nextRotateCheck = DateTime.now();
+  late File _outputFile;
+  IOSink? _outputFileSink;
+  Timer? _closeAndFlushTimer;
 
   /// Returns all available rotated logs, starting from the most current one.
   List<File> getAllLogFiles() =>
@@ -149,7 +149,7 @@ class RotatingFileAppender extends BaseLogAppender {
     _closeAndFlushTimer = null;
     if (_outputFileSink != null) {
       try {
-        final oldSink = _outputFileSink;
+        final oldSink = _outputFileSink!;
         _outputFileSink = null;
         await oldSink.flush();
         await oldSink.close();
@@ -176,23 +176,23 @@ class RotatingFileAppender extends BaseLogAppender {
 class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
   AsyncInitializingLogHandler({this.builder}) : super(null) {
-    builder().then((newLogHandler) {
+    builder!().then((newLogHandler) {
       assert(newLogHandler != null);
       delegatedLogHandler = newLogHandler;
-      _bufferedLogRecords.forEach(handle);
+      _bufferedLogRecords!.forEach(handle);
       _bufferedLogRecords = null;
     });
   }
 
-  List<LogRecord> _bufferedLogRecords = [];
-  Future<T> Function() builder;
-  T delegatedLogHandler;
+  List<LogRecord>? _bufferedLogRecords = [];
+  Future<T> Function()? builder;
+  T? delegatedLogHandler;
 
   @override
   void handle(LogRecord record) {
     if (delegatedLogHandler != null) {
-      return delegatedLogHandler.handle(record);
+      return delegatedLogHandler!.handle(record);
     }
-    _bufferedLogRecords.add(record);
+    _bufferedLogRecords!.add(record);
   }
 }

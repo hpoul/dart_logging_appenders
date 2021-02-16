@@ -13,10 +13,10 @@ final _logger = DummyLogger('logging_appenders.loki_appender');
 /// Appender used to push logs to [Loki](https://github.com/grafana/loki).
 class LokiApiAppender extends BaseDioLogSender {
   LokiApiAppender({
-    @required this.server,
-    @required this.username,
-    @required this.password,
-    @required this.labels,
+    required this.server,
+    required this.username,
+    required this.password,
+    required this.labels,
   })  : labelsString = '{' +
             labels.entries
                 .map((entry) => '${entry.key}="${entry.value}"')
@@ -37,7 +37,7 @@ class LokiApiAppender extends BaseDioLogSender {
   static final DateFormat _dateFormat =
       DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-  Dio _clientInstance;
+  Dio? _clientInstance;
 
   Dio get _client => _clientInstance ??= Dio();
 
@@ -86,10 +86,10 @@ class LokiApiAppender extends BaseDioLogSender {
 //      _logger.finest('sent logs.');
         )
         .catchError((dynamic err, StackTrace stackTrace) {
-      String message;
+      String? message;
       if (err is DioError) {
         if (err.response != null) {
-          message = 'response:' + err.response.data?.toString();
+          message = 'response:' + err.response!.data?.toString();
         }
       }
       _logger.warning(

@@ -8,20 +8,20 @@ LogRecordFormatter defaultLogRecordFormatter() => stdout.supportsAnsiEscapes
     ? const ColorFormatter()
     : const DefaultLogRecordFormatter();
 
-PrintAppender defaultCreatePrintAppender({Level stderrLevel}) =>
+PrintAppender defaultCreatePrintAppender({Level? stderrLevel}) =>
     IoPrintAppender(stderrLevel: stderrLevel);
 
 class IoPrintAppender extends PrintAppender {
   IoPrintAppender({
-    LogRecordFormatter formatter,
+    LogRecordFormatter? formatter,
     this.stderrLevel,
   }) : super(formatter: formatter);
 
-  final Level stderrLevel;
+  final Level? stderrLevel;
 
   @override
   void handle(LogRecord record) {
-    if (stderrLevel != null && record.level >= stderrLevel) {
+    if (stderrLevel != null && record.level >= stderrLevel!) {
       stderr.writeln(formatter.format(record));
     } else {
       super.handle(record);

@@ -63,7 +63,7 @@ class ColorFormatter extends LogRecordFormatter {
       [this.wrappedFormatter = const DefaultLogRecordFormatter()]);
 
   final LogRecordFormatter wrappedFormatter;
-  static final Map<Level, _AnsiCombination> _colorCache = {};
+  static final Map<Level, _AnsiCombination?> _colorCache = {};
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
@@ -79,7 +79,7 @@ class ColorFormatter extends LogRecordFormatter {
     return sb;
   }
 
-  _AnsiCombination _colorForLevel(Level level) {
+  _AnsiCombination? _colorForLevel(Level level) {
     if (level <= Level.FINE) {
       return _AnsiCombination.combine([ansi.styleDim, ansi.lightGray]);
     }

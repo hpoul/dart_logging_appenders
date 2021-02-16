@@ -87,11 +87,11 @@ void main() {
 
       appender.handle(_logRecord('foo'));
       async.flushMicrotasks();
-      verifyNever(mockAppender.handle(any));
+      verifyNever(mockAppender.handle(any!));
 
       logAppenderCompleter.complete(mockAppender);
       async.flushMicrotasks();
-      verify(mockAppender.handle(any)).called(1);
+      verify(mockAppender.handle(any!)).called(1);
     });
   });
 }
