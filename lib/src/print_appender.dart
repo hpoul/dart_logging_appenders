@@ -22,8 +22,7 @@ class PrintAppender extends BaseLogAppender {
     Level level = Level.ALL,
     Level stderrLevel = Level.OFF,
   }) {
-    assert(level != null);
-    assert(stderrLevel == null || level <= stderrLevel);
+    assert(level <= stderrLevel);
     Logger.root.clearListeners();
     Logger.root.level = level;
     return defaultCreatePrintAppender(stderrLevel: stderrLevel)

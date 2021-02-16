@@ -11,7 +11,11 @@ class FakeLogRecordFormatter extends LogRecordFormatter {
       sb..write('msg:${rec.message}');
 }
 
-class MockLogRecordFormatter extends Mock implements LogRecordFormatter {}
+class MockLogRecordFormatter extends Mock implements LogRecordFormatter {
+  @override
+  String format(LogRecord? rec) =>
+      super.noSuchMethod(Invocation.method(#format, [rec])) as String? ?? '';
+}
 
 void main() {
   setUpAll(() {
@@ -23,7 +27,7 @@ void main() {
     final dummyLogger = Logger.detached('dummy');
     dummyLogger.level = Level.ALL;
     final formatter = MockLogRecordFormatter();
-    when(formatter.format(any!)).thenReturn('mock');
+    when(formatter.format(any)).thenReturn('mock');
     final appender = PrintAppender(formatter: formatter);
     TestUtils.overridePrint(printLog, () {
       appender.attachToLogger(dummyLogger);
@@ -31,6 +35,6 @@ void main() {
     });
 
     expect(printLog, equals(['mock']));
-    verify(formatter.format(any!)).called(1);
+    verify(formatter.format(any)).called(1);
   });
 }

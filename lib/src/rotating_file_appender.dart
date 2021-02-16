@@ -24,8 +24,7 @@ class RotatingFileAppender extends BaseLogAppender {
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
     this.rotateCheckInterval = const Duration(minutes: 5),
     this.clock = const Clock(),
-  })  : assert(baseFilePath != null),
-        super(formatter) {
+  }) : super(formatter) {
     _outputFile = File(baseFilePath);
     if (!_outputFile.parent.existsSync()) {
       throw StateError(
@@ -69,7 +68,7 @@ class RotatingFileAppender extends BaseLogAppender {
 
   IOSink _getOpenOutputFileSink() =>
       _outputFileSink ??= _outputFile.openWrite(mode: FileMode.append)
-        ..done.catchError((dynamic error, StackTrace stackTrace) {
+        ..done.catchError((Object error, StackTrace stackTrace) {
           print('error while writing to logging file.');
           _logger.warning(
               'Error while writing to logging file.', error, stackTrace);
@@ -177,7 +176,6 @@ class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
   AsyncInitializingLogHandler({this.builder}) : super(null) {
     builder!().then((newLogHandler) {
-      assert(newLogHandler != null);
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords!.forEach(handle);
       _bufferedLogRecords = null;

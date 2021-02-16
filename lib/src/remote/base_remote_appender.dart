@@ -116,7 +116,7 @@ abstract class BaseDioLogSender extends BaseLogSender {
         var message = err.runtimeType.toString();
         if (err is DioError) {
           if (err.response != null) {
-            message = 'response:' + err.response!.data?.toString();
+            message = 'response:${err.response!.data}';
           }
           _logger.warning(
               'Error while sending logs. $message', err, stackTrace);
@@ -197,7 +197,7 @@ class SimpleJobQueue {
 
       _currentStream = null;
       completer.complete(successfulJobs);
-    }, onError: (dynamic error, StackTrace stackTrace) {
+    }, onError: (Object error, StackTrace stackTrace) {
       _logger.warning('Error while executing job', error, stackTrace);
       _errorCount++;
       _lastError = DateTime.now();

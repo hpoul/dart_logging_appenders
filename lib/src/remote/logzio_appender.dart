@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
-import 'package:meta/meta.dart';
 
 // ignore: unused_element
 final _logger = DummyLogger('logging_appenders.logzio_appender');
@@ -21,11 +20,7 @@ class LogzIoApiAppender extends BaseDioLogSender {
     this.url = 'https://listener.logz.io:8071/',
     this.type = 'flutterlog',
     int? bufferSize,
-  })  : assert(apiToken != null),
-        assert(labels != null),
-        assert(url != null),
-        assert(type != null),
-        super(formatter: formatter, bufferSize: bufferSize);
+  }) : super(formatter: formatter, bufferSize: bufferSize);
 
   final String url;
   final String apiToken;

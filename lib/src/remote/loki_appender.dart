@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
-import 'package:meta/meta.dart';
 
 final _logger = DummyLogger('logging_appenders.loki_appender');
 
@@ -17,7 +16,7 @@ class LokiApiAppender extends BaseDioLogSender {
     required this.username,
     required this.password,
     required this.labels,
-  })  : labelsString = '{' +
+  })   : labelsString = '{' +
             labels.entries
                 .map((entry) => '${entry.key}="${entry.value}"')
                 .join(',') +
@@ -82,14 +81,14 @@ class LokiApiAppender extends BaseDioLogSender {
           ),
         )
         .then(
-          (response) => null,
+          (response) => Future<void>.value(null),
 //      _logger.finest('sent logs.');
         )
-        .catchError((dynamic err, StackTrace stackTrace) {
+        .catchError((Object err, StackTrace stackTrace) {
       String? message;
       if (err is DioError) {
         if (err.response != null) {
-          message = 'response:' + err.response!.data?.toString();
+          message = 'response:${err.response!.data}';
         }
       }
       _logger.warning(
