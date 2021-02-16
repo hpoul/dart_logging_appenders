@@ -56,14 +56,14 @@ packages:
       name: logging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.3+2"
+    version: "1.0.0"
   logging_appenders:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.4.2+3"
+    version: "0.4.3+1"
   meta:
     dependency: transitive
     description:
@@ -85,13 +85,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0+1"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.23.1"
   source_span:
     dependency: transitive
     description:
@@ -121,4 +114,4 @@ packages:
     source: hosted
     version: "1.1.6"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.12.0-0 <3.0.0"
