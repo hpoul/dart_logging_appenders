@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Support for null safety
+
 ## 0.4.3+1
 
 * Fix concurrent modification #9 thanks @rvasqz86

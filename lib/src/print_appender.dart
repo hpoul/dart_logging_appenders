@@ -8,7 +8,7 @@ import 'package:logging_appenders/src/logrecord_formatter.dart';
 /// Appender which outputs all log records using the given formatter to
 /// stdout using `print()`.
 class PrintAppender extends BaseLogAppender {
-  PrintAppender({LogRecordFormatter formatter})
+  PrintAppender({LogRecordFormatter? formatter})
       : super(formatter ?? defaultLogRecordFormatter());
 
   /// Will setup the root logger with the given level and appends
@@ -22,15 +22,14 @@ class PrintAppender extends BaseLogAppender {
     Level level = Level.ALL,
     Level stderrLevel = Level.OFF,
   }) {
-    assert(level != null);
-    assert(stderrLevel == null || level <= stderrLevel);
+    assert(level <= stderrLevel);
     Logger.root.clearListeners();
     Logger.root.level = level;
     return defaultCreatePrintAppender(stderrLevel: stderrLevel)
       ..attachToLogger(Logger.root);
   }
 
-  void Function(Object line) printer;
+  void Function(Object line)? printer;
 
   @override
   void handle(LogRecord record) {

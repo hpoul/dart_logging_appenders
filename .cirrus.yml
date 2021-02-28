@@ -1,5 +1,6 @@
 container:
-  image: cirrusci/flutter:v1.12.13-hotfix.5
+  #image: cirrusci/flutter:v1.12.13-hotfix.5
+  image: cirrusci/flutter:1.26.0-17.8.pre
 coverage_task:
   name: "Coverage"
   environment:

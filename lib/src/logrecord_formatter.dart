@@ -1,6 +1,5 @@
-import 'package:io/ansi.dart' as ansi;
-import 'package:io/ansi.dart';
 import 'package:logging/logging.dart';
+import 'internal/ansi.dart' as ansi;
 
 /// Base class for formatters which are responsible for converting
 /// [LogRecord]s to strings.
@@ -63,7 +62,7 @@ class ColorFormatter extends LogRecordFormatter {
       [this.wrappedFormatter = const DefaultLogRecordFormatter()]);
 
   final LogRecordFormatter wrappedFormatter;
-  static final Map<Level, _AnsiCombination> _colorCache = {};
+  static final Map<Level, _AnsiCombination?> _colorCache = {};
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
@@ -79,7 +78,7 @@ class ColorFormatter extends LogRecordFormatter {
     return sb;
   }
 
-  _AnsiCombination _colorForLevel(Level level) {
+  _AnsiCombination? _colorForLevel(Level level) {
     if (level <= Level.FINE) {
       return _AnsiCombination.combine([ansi.styleDim, ansi.lightGray]);
     }
@@ -99,7 +98,7 @@ class ColorFormatter extends LogRecordFormatter {
 class _AnsiCombination {
   _AnsiCombination._(this.escape, this.resetEscape);
 
-  _AnsiCombination.combine(List<AnsiCode> codes)
+  _AnsiCombination.combine(List<ansi.AnsiCode> codes)
       : this._(codes.map((code) => code.escape).join(),
             codes.map((code) => code.reset?.escape).join());
 

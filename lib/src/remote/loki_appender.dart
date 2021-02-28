@@ -6,18 +6,17 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
-import 'package:meta/meta.dart';
 
 final _logger = DummyLogger('logging_appenders.loki_appender');
 
 /// Appender used to push logs to [Loki](https://github.com/grafana/loki).
 class LokiApiAppender extends BaseDioLogSender {
   LokiApiAppender({
-    @required this.server,
-    @required this.username,
-    @required this.password,
-    @required this.labels,
-  })  : labelsString = '{' +
+    required this.server,
+    required this.username,
+    required this.password,
+    required this.labels,
+  })   : labelsString = '{' +
             labels.entries
                 .map((entry) => '${entry.key}="${entry.value}"')
                 .join(',') +
@@ -37,7 +36,7 @@ class LokiApiAppender extends BaseDioLogSender {
   static final DateFormat _dateFormat =
       DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-  Dio _clientInstance;
+  Dio? _clientInstance;
 
   Dio get _client => _clientInstance ??= Dio();
 
@@ -82,14 +81,14 @@ class LokiApiAppender extends BaseDioLogSender {
           ),
         )
         .then(
-          (response) => null,
+          (response) => Future<void>.value(null),
 //      _logger.finest('sent logs.');
         )
-        .catchError((dynamic err, StackTrace stackTrace) {
-      String message;
+        .catchError((Object err, StackTrace stackTrace) {
+      String? message;
       if (err is DioError) {
         if (err.response != null) {
-          message = 'response:' + err.response.data?.toString();
+          message = 'response:${err.response!.data}';
         }
       }
       _logger.warning(

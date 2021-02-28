@@ -31,7 +31,11 @@ void tempDirTest<T>(
 
 LogRecord _logRecord(String message) => TestUtils.logRecord(message);
 
-class MockLockAppender extends Mock implements BaseLogAppender {}
+class MockLockAppender extends Mock implements BaseLogAppender {
+  @override
+  void handle(LogRecord? record) =>
+      super.noSuchMethod(Invocation.method(#handle, [record]));
+}
 
 void main() {
   hierarchicalLoggingEnabled = true;

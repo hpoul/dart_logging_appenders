@@ -6,7 +6,7 @@ LogRecordFormatter defaultLogRecordFormatter() =>
     const DefaultLogRecordFormatter();
 
 PrintAppender defaultCreatePrintAppender({
-  LogRecordFormatter formatter,
-  Level stderrLevel,
+  LogRecordFormatter? formatter,
+  Level? stderrLevel,
 }) =>
     PrintAppender(formatter: formatter);

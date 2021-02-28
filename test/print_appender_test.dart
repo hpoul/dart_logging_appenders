@@ -12,6 +12,9 @@ class FakeLogRecordFormatter extends LogRecordFormatter {
 }
 
 class MockLogRecordFormatter extends Mock implements LogRecordFormatter {
+  @override
+  String format(LogRecord? rec) =>
+      super.noSuchMethod(Invocation.method(#format, [rec])) as String? ?? '';
 }
 
 void main() {
@@ -35,4 +38,3 @@ void main() {
     verify(formatter.format(any)).called(1);
   });
 }
-

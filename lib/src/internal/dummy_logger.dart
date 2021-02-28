@@ -14,7 +14,7 @@ class DummyLogger implements Logger {
   }
   DummyLogger._named(this.name);
 
-  static Level internalLogLevel;
+  static Level? internalLogLevel;
   static final Map<String, DummyLogger> _loggers = <String, DummyLogger>{};
 
   @override
@@ -24,7 +24,7 @@ class DummyLogger implements Logger {
   set level(newLevel) => internalLogLevel = newLevel;
 
   @override
-  Map<String, Logger> get children => null;
+  Map<String, Logger> get children => const {};
 
   final formatter = const DefaultLogRecordFormatter();
 
@@ -33,53 +33,53 @@ class DummyLogger implements Logger {
 
   /// Log message at level [Level.FINEST].
   @override
-  void finest(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void finest(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.FINEST, message, error, stackTrace);
 
   /// Log message at level [Level.FINER].
   @override
-  void finer(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void finer(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.FINER, message, error, stackTrace);
 
   /// Log message at level [Level.FINE].
   @override
-  void fine(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void fine(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.FINE, message, error, stackTrace);
 
   /// Log message at level [Level.CONFIG].
   @override
-  void config(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void config(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.CONFIG, message, error, stackTrace);
 
   /// Log message at level [Level.INFO].
   @override
-  void info(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void info(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.INFO, message, error, stackTrace);
 
   /// Log message at level [Level.WARNING].
   @override
-  void warning(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void warning(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.WARNING, message, error, stackTrace);
 
   /// Log message at level [Level.SEVERE].
   @override
-  void severe(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void severe(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.SEVERE, message, error, stackTrace);
 
   /// Log message at level [Level.SHOUT].
   @override
-  void shout(dynamic message, [Object error, StackTrace stackTrace]) =>
+  void shout(dynamic message, [Object? error, StackTrace? stackTrace]) =>
       log(Level.SHOUT, message, error, stackTrace);
 
   @override
-  String get fullName => null;
+  String get fullName => 'dummy';
 
   @override
   bool isLoggable(Level value) => (value >= level);
 
   @override
   void log(Level logLevel, dynamic message,
-      [Object error, StackTrace stackTrace, Zone zone]) {
+      [Object? error, StackTrace? stackTrace, Zone? zone]) {
     if (isLoggable(logLevel)) {
       print(formatter.format(LogRecord(
         logLevel,
@@ -95,8 +95,8 @@ class DummyLogger implements Logger {
   final String name;
 
   @override
-  Stream<LogRecord> get onRecord => null;
+  Stream<LogRecord> get onRecord => const Stream.empty();
 
   @override
-  Logger get parent => null;
+  Logger? get parent => null;
 }
