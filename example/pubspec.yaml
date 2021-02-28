@@ -1,6 +1,6 @@
 name: example
 description: Example Application using simple_json_persistence
-version: 1.0.0+1
+publish_to: none
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
