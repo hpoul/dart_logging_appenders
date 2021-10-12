@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
@@ -40,46 +39,6 @@ class MockLockAppender extends Mock implements BaseLogAppender {
 void main() {
   hierarchicalLoggingEnabled = true;
   LoggingAppenders.internalLogLevel = Level.ALL;
-
-  tempDirTest('simple write test', (dir) async {
-    final logFile = path.join(dir.path, 'app.log');
-    final appender = RotatingFileAppender(baseFilePath: logFile);
-    appender.handle(LogRecord(Level.FINE, 'foo', 'foo'));
-    appender.handle(LogRecord(Level.FINE, 'bar', 'bar'));
-    await appender.dispose();
-    final content = await File(logFile).readAsString();
-    final lines = content.trim().split('\n');
-    expect(lines[0], endsWith('foo'));
-    expect(lines[1], endsWith('bar'));
-  });
-
-  tempDirTest('Check rotate', (dir) async {
-    final logFile = path.join(dir.path, 'app.log');
-//    fakeAsync((async) {
-    print('clock: ${clock.now()} XXX ${_logRecord('blubb')}');
-
-    final appender = RotatingFileAppender(
-      baseFilePath: logFile,
-      rotateAtSizeBytes: 5,
-      rotateCheckInterval: Duration.zero,
-    );
-    expect(File(logFile).existsSync(), false);
-    expect(File(logFile + '.1').existsSync(), false);
-    appender.handle(_logRecord('foo'));
-    appender.handle(_logRecord('bar'));
-    await appender.forceFlush();
-    expect(appender.getAllLogFiles(), hasLength(1));
-    appender.handle(_logRecord('baz'));
-    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
-    expect(appender.getAllLogFiles(), hasLength(2));
-    expect(File(logFile).existsSync(), true);
-    expect(File(logFile + '.1').existsSync(), true);
-    appender.handle(_logRecord('bar'));
-//    }, initialTime: DateTime(2018));
-    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
-    await _debugFiles(dir);
-    await appender.dispose();
-  });
 
   tempDirTest('test async initialization', (dir) async {
     fakeAsync((async) {

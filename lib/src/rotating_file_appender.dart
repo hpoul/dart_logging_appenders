@@ -1,82 +1,50 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:clock/clock.dart';
+import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/base_appender.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart';
 
 final _logger = DummyLogger('logging_appenders.rotating_file_appender');
 
-/// A file appender which will rotate the log file once it reaches
-/// [rotateAtSizeBytes] bytes. Will keep [keepRotateCount] number of
-/// files.
-/// If the [baseFilePath] cannot be calculated synchronously you can use
-/// a [AsyncInitializingLogHandler] to buffer log messages until the
-/// [baseFilePath] is ready.
 class RotatingFileAppender extends BaseLogAppender {
   RotatingFileAppender({
     LogRecordFormatter? formatter,
-    required this.baseFilePath,
-    this.keepRotateCount = 3,
+    required this.logPath,
+    required this.name,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
-    this.rotateCheckInterval = const Duration(minutes: 5),
-    this.clock = const Clock(),
   }) : super(formatter) {
-    _outputFile = File(baseFilePath);
-    if (!_outputFile.parent.existsSync()) {
-      throw StateError(
-          'When initializing file logger, ${_outputFile.parent} must exist.');
-    }
-    _maybeRotate();
+    _outputFile = null;
+
+    _checkRotate();
   }
 
   @visibleForTesting
   static Logger get debugLogger => _logger;
 
-  /// (Absolute) path to base file (ie. the current log file).
-  final String baseFilePath;
+  /// (Absolute) (ie. the current log file path).
+  final String logPath;
 
-  /// the number of rotated files to keep.
-  /// e.g. if this is 3 we will create `filename`, `filename.1`, `filename.2`.
-  final int keepRotateCount;
+  final String name;
 
   /// The size in bytes we allow a file to grow before rotating it.
   final int rotateAtSizeBytes;
-  final Duration rotateCheckInterval;
 
-  /// how long to keep log file open. will be closed once this duration
-  /// passed without a log message.
-  final Duration keepOpenDuration = const Duration(minutes: 2);
-  final Clock clock;
+  File? _outputFile;
 
-  // immediately check on rotate when creating appender.
-  DateTime? _nextRotateCheck = DateTime.now();
-  late File _outputFile;
-  IOSink? _outputFileSink;
-  Timer? _closeAndFlushTimer;
-
-  /// Returns all available rotated logs, starting from the most current one.
-  List<File> getAllLogFiles() =>
-      Iterable.generate(keepRotateCount, (idx) => idx)
-          .map((rotation) => _fileNameForRotation(rotation))
-          .map((fileName) => File(fileName))
-          .takeWhile((file) => file.existsSync())
-          .toList(growable: false);
-
-  IOSink _getOpenOutputFileSink() =>
-      _outputFileSink ??= _outputFile.openWrite(mode: FileMode.append)
-        ..done.catchError((Object error, StackTrace stackTrace) {
-          print('error while writing to logging file.');
-          _logger.warning(
-              'Error while writing to logging file.', error, stackTrace);
-          return Future<dynamic>.error(error, stackTrace);
-        });
-
-  static int id = 0;
-  final int instanceId = id++;
+  bool _defaultRule(File file) {
+    final length = file.lengthSync();
+    if (length > rotateAtSizeBytes) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   void handle(LogRecord record) {
@@ -84,89 +52,84 @@ class RotatingFileAppender extends BaseLogAppender {
       // ignore my own log messages.
       return;
     }
+
+    _checkRotate();
+
     try {
-      _getOpenOutputFileSink()..writeln(formatter.format(record));
+      _outputFile!.writeAsStringSync(formatter.format(record) + '\r\n',
+          mode: FileMode.append, encoding: utf8, flush: true);
     } catch (error, stackTrace) {
       print('error while writing log $error $stackTrace');
       _logger.warning('Error while writing log.', error, stackTrace);
-      _closeAndFlush();
-      // try once more.
-      _getOpenOutputFileSink()..writeln(formatter.format(record));
     }
-    _closeAndFlushTimer?.cancel();
-    _closeAndFlushTimer = Timer(keepOpenDuration, () {
-      _closeAndFlush();
-    });
-//    _outputFile.writeAsString(
-//        (formatter.formatToStringBuffer(record, StringBuffer())..writeln())
-//            .toString(),
-//        mode: FileMode.append);
-    _maybeRotate();
-  }
-
-  String _fileNameForRotation(int rotation) =>
-      rotation == 0 ? baseFilePath : '$baseFilePath.$rotation';
-
-  /// rotates the file, if it is larger than
-  Future<bool> _maybeRotate() async {
-    if (_nextRotateCheck?.isAfter(clock.now()) != false) {
-      return false;
-    }
-    _nextRotateCheck = null;
-    try {
-      try {
-        final length = await File(_outputFile.path).length();
-        if (length < rotateAtSizeBytes) {
-          return false;
-        }
-      } on FileSystemException catch (_) {
-        // if .length() throws an error, ignore it.
-        return false;
-      } catch (e, stackTrace) {
-        _logger.warning('Error while checking file legnth.', e, stackTrace);
-        rethrow;
-      }
-
-      for (var i = keepRotateCount - 1; i >= 0; i--) {
-        final file = File(_fileNameForRotation(i));
-        if (file.existsSync()) {
-          await file.rename(_fileNameForRotation(i + 1));
-        }
-      }
-
-      final flushFuture = _closeAndFlush();
-      handle(LogRecord(Level.INFO, 'Rotated log.', '_'));
-      await flushFuture;
-      return true;
-    } finally {
-      _nextRotateCheck = clock.now().add(rotateCheckInterval);
-    }
-  }
-
-  Future<void> _closeAndFlush() async {
-    _closeAndFlushTimer?.cancel();
-    _closeAndFlushTimer = null;
-    if (_outputFileSink != null) {
-      try {
-        final oldSink = _outputFileSink!;
-        _outputFileSink = null;
-        await oldSink.flush();
-        await oldSink.close();
-      } catch (e, stackTrace) {
-        _logger.warning('Error while flushing, closing stream.', e, stackTrace);
-      }
-    }
-  }
-
-  @visibleForTesting
-  Future<void> forceFlush() async {
-    await _closeAndFlush();
   }
 
   @override
   Future<void> dispose() async {
-    await _closeAndFlush();
     await super.dispose();
+  }
+
+  Future<void> _checkRotate({String ext = '.log'}) async {
+    // check current _outputFile
+    if (_outputFile != null) {
+      if (_defaultRule(_outputFile!)) {
+        _outputFile = null;
+      }
+    }
+
+    var result = '';
+    try {
+      final files = Directory(logPath).listSync();
+      for (var f in files) {
+        if (FileSystemEntity.isFileSync(f.path) &&
+            extension(f.path).toLowerCase() == ext) {
+          final index = f.path.toLowerCase().indexOf('_$name.');
+          if (index != -1) {
+            final m = f.path.substring(index - 'yyyyMMdd_HHmmss'.length, index);
+            final _m = m.substring(0, 4) +
+                '-' +
+                m.substring(4, 6) +
+                '-' +
+                m.substring(6, 8) +
+                m.substring(8, 11) +
+                ':' +
+                m.substring(11, 13) +
+                ':' +
+                m.substring(13, m.length);
+            final date = DateFormat('yyyy-MM-dd_HH:mm:ss').parse(_m);
+            // same day
+            if (date.year == DateTime.now().year &&
+                date.month == DateTime.now().month &&
+                date.day == DateTime.now().day) {
+              // check file size
+              try {
+                if (!_defaultRule(File(f.path))) {
+                  result = f.path;
+                  _outputFile ??= File(f.path);
+                  break;
+                }
+              } on FileSystemException catch (_) {
+                print(_);
+              } catch (e, stackTrace) {
+                _logger.warning(
+                    'Error while checking file legnth.', e, stackTrace);
+              }
+            }
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      _logger.warning('Error while checking file information.', e, stackTrace);
+    }
+
+    if (result == '') {
+      // not found old log file
+      final now = DateTime.now();
+      result =
+          '${NumberFormat('####').format(now.year)}${NumberFormat('00').format(now.month)}${NumberFormat('00').format(now.day)}_${NumberFormat('00').format(now.hour)}${NumberFormat('00').format(now.minute)}${NumberFormat('00').format(now.second)}_$name.log';
+      _outputFile = File('$logPath$separator$result');
+      _outputFile!.createSync(recursive: true);
+    }
   }
 }
 
