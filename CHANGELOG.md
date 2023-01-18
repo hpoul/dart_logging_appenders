@@ -1,3 +1,7 @@
+## 1.0.0+1
+
+* AsyncInitializingLogHandler: Allow access to underlying async handler.
+
 ## 1.0.0
 
 * Support for null safety

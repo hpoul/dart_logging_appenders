@@ -174,17 +174,21 @@ class RotatingFileAppender extends BaseLogAppender {
 /// the [builder] method has resolved.
 class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
-  AsyncInitializingLogHandler({this.builder}) : super(null) {
-    builder!().then((newLogHandler) {
+  AsyncInitializingLogHandler({required this.builder})
+      : delegatedLogHandlerAsync = builder(),
+        super(null) {
+    delegatedLogHandlerAsync.then((newLogHandler) {
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords!.forEach(handle);
       _bufferedLogRecords = null;
+      return newLogHandler;
     });
   }
 
   List<LogRecord>? _bufferedLogRecords = [];
-  Future<T> Function()? builder;
+  Future<T> Function() builder;
   T? delegatedLogHandler;
+  final Future<T> delegatedLogHandlerAsync;
 
   @override
   void handle(LogRecord record) {
