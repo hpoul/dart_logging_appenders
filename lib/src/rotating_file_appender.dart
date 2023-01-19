@@ -138,7 +138,7 @@ class RotatingFileAppender extends BaseLogAppender {
               // open file can't be renamed on Windows, so close file and retry
               //print('Exception when renaming the active log file, closing and retrying...');
               flushFuture = _closeAndFlush();
-              await flushFuture!;
+              await flushFuture;
               await file.rename(_fileNameForRotation(i + 1));
             } else {
               rethrow;
@@ -150,7 +150,7 @@ class RotatingFileAppender extends BaseLogAppender {
       // initiate flush if not already running
       flushFuture ??= _closeAndFlush();
       handle(LogRecord(Level.INFO, 'Rotated log.', '_'));
-      await flushFuture!;
+      await flushFuture;
       return true;
     } finally {
       _nextRotateCheck = clock.now().add(rotateCheckInterval);
