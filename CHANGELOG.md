@@ -1,3 +1,7 @@
+## 1.0.0+2
+
+* Update dependencies.
+
 ## 1.0.0+1
 
 * AsyncInitializingLogHandler: Allow access to underlying async handler.
