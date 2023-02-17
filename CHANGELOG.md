@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Allow dio 5.x
+
 ## 1.0.0+2
 
 * Update dependencies.
