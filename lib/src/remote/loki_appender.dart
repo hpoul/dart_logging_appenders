@@ -16,15 +16,12 @@ class LokiApiAppender extends BaseDioLogSender {
     required this.username,
     required this.password,
     required this.labels,
-  })   : labelsString = '{' +
-            labels.entries
-                .map((entry) => '${entry.key}="${entry.value}"')
-                .join(',') +
-            '}',
-        authHeader = 'Basic ' +
-            base64
-                .encode(utf8.encode([username, password].join(':')))
-                .toString();
+  })  : labelsString =
+            '{${labels.entries.map((entry) => '${entry.key}="${entry.value}"').join(',')}}',
+        authHeader = 'Basic ${base64.encode(utf8.encode([
+          username,
+          password
+        ].join(':')))}';
 
   final String server;
   final String username;
@@ -56,12 +53,13 @@ class LokiApiAppender extends BaseDioLogSender {
       if (obj is LogEntry) {
         return {
           'ts': _dateFormat.format(obj.ts.toUtc()),
-          'line': obj.lineLabels.entries
-                  .map((entry) =>
-                      '${entry.key}=${_encodeLineLabelValue(entry.value)}')
-                  .join(' ') +
-              ' - ' +
-              obj.line
+          'line': [
+            obj.lineLabels.entries
+                .map((entry) =>
+                    '${entry.key}=${_encodeLineLabelValue(entry.value)}')
+                .join(' '),
+            obj.line,
+          ].join(' - ')
         };
       }
       return obj.toJson();

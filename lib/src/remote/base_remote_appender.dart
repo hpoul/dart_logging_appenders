@@ -4,9 +4,9 @@ import 'dart:collection';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/base_appender.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
+import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:meta/meta.dart';
 
 final _logger = DummyLogger('logging_appenders.base_remote_appender');

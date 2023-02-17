@@ -152,6 +152,8 @@ String? wrapWith(String? value, Iterable<AnsiCode> codes,
       case AnsiCodeType.reset:
         throw ArgumentError.value(
             codes, 'codes', 'Cannot contain reset codes.');
+      case AnsiCodeType.style:
+        break;
     }
   }
 

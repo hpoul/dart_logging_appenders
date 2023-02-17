@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:logging/logging.dart';
-import 'package:logging_appenders/logging_appenders.dart';
 import 'package:logging_appenders/src/base_appender.dart';
+import 'package:logging_appenders/src/rotating_file_appender.dart';
 import 'package:meta/meta.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as path;
@@ -64,7 +64,7 @@ void main() {
       rotateCheckInterval: Duration.zero,
     );
     expect(File(logFile).existsSync(), false);
-    expect(File(logFile + '.1').existsSync(), false);
+    expect(File('$logFile.1').existsSync(), false);
     appender.handle(_logRecord('foo'));
     appender.handle(_logRecord('bar'));
     await appender.forceFlush();
@@ -73,7 +73,7 @@ void main() {
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     expect(appender.getAllLogFiles(), hasLength(2));
     expect(File(logFile).existsSync(), true);
-    expect(File(logFile + '.1').existsSync(), true);
+    expect(File('$logFile.1').existsSync(), true);
     appender.handle(_logRecord('bar'));
 //    }, initialTime: DateTime(2018));
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
