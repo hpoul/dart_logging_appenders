@@ -123,7 +123,7 @@ class RotatingFileAppender extends BaseLogAppender {
         // if .length() throws an error, ignore it.
         return false;
       } catch (e, stackTrace) {
-        _logger.warning('Error while checking file legnth.', e, stackTrace);
+        _logger.warning('Error while checking file length.', e, stackTrace);
         rethrow;
       }
 
@@ -136,7 +136,6 @@ class RotatingFileAppender extends BaseLogAppender {
           } on FileSystemException catch (_) {
             if (i == 0) {
               // open file can't be renamed on Windows, so close file and retry
-              //print('Exception when renaming the active log file, closing and retrying...');
               flushFuture = _closeAndFlush();
               await flushFuture;
               await file.rename(_fileNameForRotation(i + 1));
