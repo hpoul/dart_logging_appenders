@@ -85,13 +85,13 @@ class RotatingFileAppender extends BaseLogAppender {
       return;
     }
     try {
-      _getOpenOutputFileSink()..writeln(formatter.format(record));
+      _getOpenOutputFileSink().writeln(formatter.format(record));
     } catch (error, stackTrace) {
       print('error while writing log $error $stackTrace');
       _logger.warning('Error while writing log.', error, stackTrace);
       _closeAndFlush();
       // try once more.
-      _getOpenOutputFileSink()..writeln(formatter.format(record));
+      _getOpenOutputFileSink().writeln(formatter.format(record));
     }
     _closeAndFlushTimer?.cancel();
     _closeAndFlushTimer = Timer(keepOpenDuration, () {

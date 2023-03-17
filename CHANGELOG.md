@@ -1,6 +1,14 @@
-## 1.0.0+2
+## 1.0.2
 
 * Fix RotatingFileAppender on windows #15 / #18
+
+## 1.0.1
+
+* Allow dio 5.x
+
+## 1.0.0+2
+
+* Update dependencies.
 
 ## 1.0.0+1
 
