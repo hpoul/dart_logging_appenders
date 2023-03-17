@@ -5,11 +5,11 @@ set -xeu
 cd "${0%/*}"/..
 
 
-flutter pub get
-pub global activate test_coverage
+dart pub get
+dart pub global activate test_coverage
 
 fail=false
-pub global run test_coverage || fail=true
+dart pub global run test_coverage || fail=true
 echo "fail=$fail"
 bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
 
