@@ -107,7 +107,7 @@ class RotatingFileAppender extends BaseLogAppender {
   String _fileNameForRotation(int rotation) =>
       rotation == 0 ? baseFilePath : '$baseFilePath.$rotation';
 
-  /// rotates the file, if it is larger than
+  /// rotates the file, if it is larger than [rotateAtSizeBytes]
   Future<bool> _maybeRotate() async {
     if (_nextRotateCheck?.isAfter(clock.now()) != false) {
       return false;
@@ -123,18 +123,31 @@ class RotatingFileAppender extends BaseLogAppender {
         // if .length() throws an error, ignore it.
         return false;
       } catch (e, stackTrace) {
-        _logger.warning('Error while checking file legnth.', e, stackTrace);
+        _logger.warning('Error while checking file length.', e, stackTrace);
         rethrow;
       }
 
+      Future<void>? flushFuture;
       for (var i = keepRotateCount - 1; i >= 0; i--) {
         final file = File(_fileNameForRotation(i));
         if (file.existsSync()) {
-          await file.rename(_fileNameForRotation(i + 1));
+          try {
+            await file.rename(_fileNameForRotation(i + 1));
+          } on FileSystemException catch (_) {
+            if (i == 0) {
+              // open file can't be renamed on Windows, so close file and retry
+              flushFuture = _closeAndFlush();
+              await flushFuture;
+              await file.rename(_fileNameForRotation(i + 1));
+            } else {
+              rethrow;
+            }
+          }
         }
       }
 
-      final flushFuture = _closeAndFlush();
+      // initiate flush if not already running
+      flushFuture ??= _closeAndFlush();
       handle(LogRecord(Level.INFO, 'Rotated log.', '_'));
       await flushFuture;
       return true;
