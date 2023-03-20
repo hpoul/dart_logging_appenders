@@ -9,12 +9,13 @@ Native dart package for logging appenders usable with the [logging](https://pub.
 
 It currently includes appenders for:
 
-* Local Logging
-    * `print()` [PrintAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/PrintAppender-class.html)
-    * Rolling File Appender. [RotatingFileAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/RotatingFileAppender-class.html)
-* Remote Logging
-    * [logz.io](https://logz.io/) 
-    * [loki](https://github.com/grafana/loki).
+- Local Logging
+  - `print()` [PrintAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/PrintAppender-class.html)
+  - Rolling File Appender. [RotatingFileAppender](https://pub.dev/documentation/logging_appenders/latest/logging_appenders/RotatingFileAppender-class.html)
+  - Normal File Appender,log file named like '20211010_093022_name.log'.
+- Remote Logging
+  - [logz.io](https://logz.io/)
+  - [loki](https://github.com/grafana/loki).
 
 ## Performance of Remote Logging Appenders
 
@@ -78,15 +79,15 @@ PrintAppender.setupLogging(stderrLevel: Level.SEVERE);
 
 ```dart
   final _logzIoApiSender = LogzIoApiAppender(
-    // you can find your API key and the required URL from 
+    // you can find your API key and the required URL from
     // the logz.io dashboard: https://app-eu.logz.io/#/dashboard/settings/general
     apiToken: 'MY API KEY',
     url: 'https://listener-eu.logz.io:8071/',
     labels: {'app': 'MyApp', 'os': Platform.operatingSystem},
   );
   _logzIoApiSender.attachToLogger(Logger.root);
-  
-  
+
+
   // ...
   If you know that you no longer need the appender. it's good to dispose it:
   _logzIoApiSender.dispose();
