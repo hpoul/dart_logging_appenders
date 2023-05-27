@@ -24,6 +24,9 @@ class DummyLogger implements Logger {
   set level(newLevel) => internalLogLevel = newLevel;
 
   @override
+  Stream<Level?> get onLevelChanged => const Stream.empty();
+
+  @override
   Map<String, Logger> get children => const {};
 
   final formatter = const DefaultLogRecordFormatter();
