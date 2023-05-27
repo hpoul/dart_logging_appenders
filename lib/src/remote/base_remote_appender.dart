@@ -158,7 +158,7 @@ class SimpleJobQueue {
 
   final Queue<SimpleJobDef> _queue = Queue<SimpleJobDef>();
 
-  StreamSubscription<void>? _currentStream;
+  StreamSubscription<SimpleJobDef>? _currentStream;
 
   int _errorCount = 0;
   DateTime? _lastError;
@@ -182,7 +182,7 @@ class SimpleJobQueue {
         return job;
       });
       for (final job in copyQueue) {
-        yield job;
+        yield await job;
       }
     })()
         .listen((successJob) {
