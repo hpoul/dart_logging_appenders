@@ -1,9 +1,6 @@
 include: package:lints/recommended.yaml
 
 analyzer:
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
   errors:
     # treat missing required parameters as a warning (not a hint)
     missing_required_param: warning
@@ -11,4 +8,7 @@ analyzer:
     missing_return: warning
     # allow having TODOs in the code
     todo: ignore
+  language:
+    strict-casts: true
+    strict-raw-types: true
 
