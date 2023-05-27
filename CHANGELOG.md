@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Support logging 1.2.0 package.
+
 ## 1.0.2
 
 * Fix RotatingFileAppender on windows #15 / #18
