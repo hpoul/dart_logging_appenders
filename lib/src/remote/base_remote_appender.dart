@@ -48,7 +48,7 @@ abstract class BaseLogSender extends BaseLogAppender {
     if (_logEvents.length > bufferSize) {
       _triggerSendLogEvents();
     } else {
-      _timer = Timer(const Duration(seconds: 10), () {
+      _timer = Timer(const Duration(seconds: 2), () {
         _timer = null;
         _triggerSendLogEvents();
       });
