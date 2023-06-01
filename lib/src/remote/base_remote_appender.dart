@@ -180,7 +180,7 @@ class SimpleJobQueue {
       final copyQueue = _queue.map((job) async {
         await job.runner(job).drain(null);
         return job;
-      });
+      }).toList();
       for (final job in copyQueue) {
         yield await job;
       }
