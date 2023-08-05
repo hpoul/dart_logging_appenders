@@ -1,3 +1,7 @@
+## 1.2.0+1
+
+* Graylog: Send timestamp with decimal places.
+
 ## 1.2.0
 
 * Support for gelf / Graylog appender.

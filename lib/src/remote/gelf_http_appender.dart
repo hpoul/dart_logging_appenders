@@ -142,7 +142,8 @@ class GelfPayload {
         'host': host,
         'short_message': shortMessage,
         if (fullMessage != null) 'full_message': fullMessage,
-        'timestamp': timestamp.millisecondsSinceEpoch ~/ 1000,
+        // timestamps must be seconds, but can have decimal places.
+        'timestamp': (timestamp.millisecondsSinceEpoch / 1000.0),
       };
 }
 
