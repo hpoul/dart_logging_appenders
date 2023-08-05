@@ -175,6 +175,9 @@ class SimpleJobQueue {
   int _errorCount = 0;
   DateTime? _lastError;
 
+  @visibleForTesting
+  int get length => _queue.length;
+
   void add(SimpleJobDef job) {
     _queue.addLast(job);
   }
