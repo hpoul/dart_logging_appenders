@@ -37,8 +37,14 @@ abstract class BaseLogSender extends BaseLogAppender {
     _userProperties = userProperties;
   }
 
-  Future<void> log(DateTime time, String line, Map<String, String> lineLabels) {
-    return _logEvent(LogEntry(ts: time, line: line, lineLabels: lineLabels));
+  Future<void> log(Level logLevel, DateTime time, String line,
+      Map<String, String> lineLabels) {
+    return _logEvent(LogEntry(
+      logLevel: logLevel,
+      ts: time,
+      line: line,
+      lineLabels: lineLabels,
+    ));
   }
 
   Future<void> _logEvent(LogEntry log) {
@@ -83,7 +89,7 @@ abstract class BaseLogSender extends BaseLogAppender {
       lineLabels['e'] = record.error.toString();
       lineLabels['eType'] = record.error.runtimeType.toString();
     }
-    log(record.time, message, lineLabels);
+    log(record.level, record.time, message, lineLabels);
   }
 
   Future<void> flush() => _triggerSendLogEvents();
@@ -132,10 +138,16 @@ abstract class BaseDioLogSender extends BaseLogSender {
 }
 
 class LogEntry {
-  LogEntry({required this.ts, required this.line, required this.lineLabels});
+  LogEntry({
+    required this.logLevel,
+    required this.ts,
+    required this.line,
+    required this.lineLabels,
+  });
 
   static final DateFormat _dateFormat =
       DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  final Level logLevel;
   final DateTime ts;
   final String line;
   final Map<String, String> lineLabels;
@@ -180,7 +192,7 @@ class SimpleJobQueue {
       final copyQueue = _queue.map((job) async {
         await job.runner(job).drain(null);
         return job;
-      });
+      }).toList(growable: false);
       for (final job in copyQueue) {
         yield await job;
       }

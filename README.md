@@ -15,6 +15,7 @@ It currently includes appenders for:
 * Remote Logging
     * [logz.io](https://logz.io/) 
     * [loki](https://github.com/grafana/loki).
+    * [gelf/Graylog](https://go2docs.graylog.org/5-0/getting_in_log_data/ingest_gelf.html)
 
 ## Performance of Remote Logging Appenders
 

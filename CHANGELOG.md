@@ -1,3 +1,8 @@
+## 1.2.0
+
+* Support for gelf / Graylog appender.
+* Fix concurrent modification exception (thanks @andreacimino #23)
+
 ## 1.1.0
 
 * Support logging 1.2.0 package.
