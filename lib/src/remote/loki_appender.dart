@@ -84,7 +84,7 @@ class LokiApiAppender extends BaseDioLogSender {
         )
         .catchError((Object err, StackTrace stackTrace) {
       String? message;
-      if (err is DioError) {
+      if (err is DioException) {
         if (err.response != null) {
           message = 'response:${err.response!.data}';
         }

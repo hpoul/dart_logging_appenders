@@ -120,7 +120,7 @@ abstract class BaseDioLogSender extends BaseLogSender {
         }
       }).catchError((dynamic err, StackTrace stackTrace) {
         var message = err.runtimeType.toString();
-        if (err is DioError) {
+        if (err is DioException) {
           if (err.response != null) {
             message = 'response:${err.response!.data}';
           }

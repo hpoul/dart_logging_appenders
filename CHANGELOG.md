@@ -1,6 +1,7 @@
 ## 1.2.0+1
 
 * Graylog: Send timestamp with decimal places.
+* Require at least Dio 5.2.0
 
 ## 1.2.0
 
