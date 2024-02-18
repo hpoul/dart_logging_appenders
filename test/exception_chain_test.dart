@@ -20,6 +20,8 @@ void main() {
     } on Exception catch (e, stackTrace) {
       expect(e.getCausedByException(), isNotNull);
       expect(e.getCausedByException()?.error, isFormatException);
+      expect(e.toStringWithCause(), contains('FormatException'));
+      _logger.finer('toStringWithCause: ${e.toStringWithCause()}');
       _logger.finer('catched exception.', e, stackTrace);
     }
   });

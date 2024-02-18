@@ -30,6 +30,6 @@ extension CausedByException<E extends Exception> on E {
     final error = cause.error;
     final causeToString =
         error is Exception ? error.toStringWithCause() : error.toString();
-    return '${toString()} cause: {$causeToString}';
+    return '${toString()} (cause: $causeToString)';
   }
 }
