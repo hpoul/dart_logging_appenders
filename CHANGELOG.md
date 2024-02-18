@@ -1,3 +1,7 @@
+## 1.3.0-dev.1
+
+* Support for exception chaining.
+
 ## 1.2.0+1
 
 * Graylog: Send timestamp with decimal places.
