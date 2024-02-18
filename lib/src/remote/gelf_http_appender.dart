@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
-import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 
 final _logger = DummyLogger('logging_appenders.loki_appender');
@@ -23,12 +22,9 @@ class GelfHttpAppender extends BaseDioLogSender {
     required this.endpoint,
     required this.host,
     this.toLogLevel = _defaultToSyslogLevel,
-    LogRecordFormatter? formatter,
-    int? bufferSize,
-  }) : super(
-          formatter: formatter,
-          bufferSize: bufferSize,
-        );
+    super.formatter,
+    super.bufferSize,
+  });
 
   final String endpoint;
 

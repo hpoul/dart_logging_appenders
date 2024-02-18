@@ -13,9 +13,9 @@ PrintAppender defaultCreatePrintAppender({Level? stderrLevel}) =>
 
 class IoPrintAppender extends PrintAppender {
   IoPrintAppender({
-    LogRecordFormatter? formatter,
+    super.formatter,
     this.stderrLevel,
-  }) : super(formatter: formatter);
+  });
 
   final Level? stderrLevel;
 
