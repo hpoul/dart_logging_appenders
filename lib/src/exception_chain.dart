@@ -18,10 +18,14 @@ typedef ErrorStack = ({Object error, StackTrace stack});
 ///   throw
 /// }
 extension CausedByException<E extends Exception> on E {
+  /// Marks `this` exception as being caused by [chainedException].
   E causedBy(Object chainedException, StackTrace stackTrace) =>
       _wasCausedBy(this, chainedException, stackTrace);
+
+  /// Retrieves the caused exception for `this` exception.
   ErrorStack? getCausedByException() => _causedBy[this];
 
+  /// calls [toString] appended by the caused exception, if any.
   String toStringWithCause() {
     final cause = this.getCausedByException();
     if (cause == null) {
