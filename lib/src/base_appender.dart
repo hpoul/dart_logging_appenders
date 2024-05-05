@@ -36,6 +36,10 @@ abstract class BaseLogAppender {
     _subscriptions.add(logger.onRecord.listen(logListener()));
   }
 
+  Future<void> detachFromLoggers() async {
+    await _cancelSubscriptions();
+  }
+
   void call(LogRecord record) => handle(record);
 
   @mustCallSuper

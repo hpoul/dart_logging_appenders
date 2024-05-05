@@ -33,15 +33,19 @@ class LokiApiAppender extends BaseDioLogSender {
   static final DateFormat _dateFormat =
       DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-  Dio? _clientInstance;
-
-  Dio get _client => _clientInstance ??= Dio();
+  late final Dio _client = Dio();
 
   static String _encodeLineLabelValue(String value) {
     if (value.contains(' ')) {
       return json.encode(value);
     }
     return value;
+  }
+
+  @override
+  Future<void> dispose() async {
+    await super.dispose();
+    _client.close();
   }
 
   @override

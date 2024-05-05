@@ -1,6 +1,7 @@
-## 1.3.0-dev.2
+## 1.3.0
 
 * Support for exception chaining.
+* Allow closing of subscriptions without disposing. `detachFromLoggers`
 
 ## 1.2.0+1
 

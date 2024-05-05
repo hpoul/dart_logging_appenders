@@ -26,9 +26,13 @@ class LogzIoApiAppender extends BaseDioLogSender {
   final Map<String, String> labels;
   final String type;
 
-  Dio? _clientInstance;
+  late final Dio _client = Dio();
 
-  Dio get _client => _clientInstance ??= Dio();
+  @override
+  Future<void> dispose() async {
+    await super.dispose();
+    _client.close();
+  }
 
   @override
   Future<void> sendLogEventsWithDio(List<LogEntry> entries,

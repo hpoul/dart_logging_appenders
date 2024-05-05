@@ -53,6 +53,28 @@ $ dart main.dart
 2019-08-19 15:36:03.827563 FINE main - Lorem ipsum
 ```
 
+# Support for Exception chaining
+
+To chain exception you can use the extension method on `Exception`:
+`causedBy()`.
+
+```dart
+int test() {
+  try {
+    int.parse('a');
+  } catch (e, stackTrace) {
+    throw Exception('unable to parse').causedBy(e, stackTrace);
+  }
+}
+int main() {
+  try {
+    test();
+  } catch (e, stackTrace) {
+    logger.severe('catched Exception', e, stackTrace);
+  }
+}
+```
+
 # Color Formatter
 
 ```dart

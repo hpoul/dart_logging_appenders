@@ -35,9 +35,13 @@ class GelfHttpAppender extends BaseDioLogSender {
   /// convert log levels of logging package to syslog levels.
   final SyslogLevel Function(Level level) toLogLevel;
 
-  Dio? _clientInstance;
+  late final Dio _client = Dio();
 
-  Dio get _client => _clientInstance ??= Dio();
+  @override
+  Future<void> dispose() async {
+    await super.dispose();
+    _client.close();
+  }
 
   @override
   Future<void> sendLogEventsWithDio(List<LogEntry> entries,
