@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/exception_chain.dart';
 import 'internal/ansi.dart' as ansi;
@@ -30,10 +32,20 @@ class BlockFormatter extends LogRecordFormatter {
   }
 }
 
+typedef CausedByInfo = ({Object error, StackTrace? stack});
+typedef CausedByInfoFetcher = CausedByInfo? Function(Object? error);
+
 /// Opinionated log formatter which will give a decent format of [LogRecord]
 /// and adds stack trace and error messages if they are available.
 class DefaultLogRecordFormatter extends LogRecordFormatter {
   const DefaultLogRecordFormatter();
+
+  static List<CausedByInfoFetcher> causedByFetchers = [
+    (error) => error is Exception ? error.getCausedByException() : null,
+    (error) => error is JsonUnsupportedObjectError && error.cause != null
+        ? (error: error.cause ?? '', stack: null)
+        : null,
+  ];
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
@@ -52,7 +64,10 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
         sb.writeln();
         sb.write(stack);
       }
-      final causedBy = error is Exception ? error.getCausedByException() : null;
+      final causedBy = causedByFetchers
+          .map((e) => e(error))
+          .where((x) => x != null)
+          .firstOrNull;
       if (causedBy != null) {
         sb.write('### Caused by: ');
         formatErrorAndStackTrace(causedBy.error, causedBy.stack);
