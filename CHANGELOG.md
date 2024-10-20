@@ -1,3 +1,12 @@
+## 1.4.0
+* Adjusted model to match the latest version of the Loki API
+* Updated deprecated push endpoint for Loki
+* Sending messages sorted by log levels, which makes filtering for it in Loki easier/possible
+* Adding a configuration model for Loki
+  * Can now choose between HTTP (e.g. for IP addresses) and HTTPS 
+  * Does not require Authentification anymore
+* Loki messages now also contain the user properties
+
 ## 1.3.1
 
 * Default formatter: add support for printing `cause` of [JsonUnsupportedObjectError]
