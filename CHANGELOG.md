@@ -5,6 +5,7 @@
 * Adding a configuration model for Loki
   * Can now choose between HTTP (e.g. for IP addresses) and HTTPS 
   * Does not require Authentification anymore
+* Loki messages now also contain the user properties
 
 ## 1.3.1
 

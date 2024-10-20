@@ -42,7 +42,8 @@ class LokiApiAppender extends BaseDioLogSender {
       if (obj is LogEntry) {
         return [
           '${obj.ts.microsecondsSinceEpoch * 1000}',
-          obj.line,
+          '${Map<String, String>.from(userProperties)
+            ..addAll({'message': obj.line})..toString()}',
         ];
       }
       return obj.toJson();
