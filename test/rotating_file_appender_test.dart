@@ -71,6 +71,38 @@ void main() {
     expect(appender.getAllLogFiles(), hasLength(1));
     appender.handle(_logRecord('baz'));
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
+    await appender.forceFlush();
+    expect(appender.getAllLogFiles(), hasLength(2));
+    expect(File(logFile).existsSync(), true);
+    expect(File('$logFile.1').existsSync(), true);
+    appender.handle(_logRecord('bar'));
+//    }, initialTime: DateTime(2018));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
+    await _debugFiles(dir);
+    await appender.dispose();
+  });
+
+  tempDirTest('Check logging while rotating', (dir) async {
+    final logFile = path.join(dir.path, 'app.log');
+//    fakeAsync((async) {
+    print('clock: ${clock.now()} XXX ${_logRecord('blubb')}');
+
+    final appender = RotatingFileAppender(
+      baseFilePath: logFile,
+      rotateAtSizeBytes: 500,
+      rotateCheckInterval: Duration(milliseconds: 100),
+    );
+    expect(File(logFile).existsSync(), false);
+    expect(File('$logFile.1').existsSync(), false);
+    for (int i = 0; i < 10000; i++) {
+      appender.handle(_logRecord('foo$i'));
+      appender.handle(_logRecord('bar$i'));
+    }
+    await appender.forceFlush();
+    expect(appender.getAllLogFiles(), hasLength(1));
+    appender.handle(_logRecord('baz'));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 100));
+    await appender.forceFlush();
     expect(appender.getAllLogFiles(), hasLength(2));
     expect(File(logFile).existsSync(), true);
     expect(File('$logFile.1').existsSync(), true);
