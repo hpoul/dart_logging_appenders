@@ -3,10 +3,10 @@ description: Example Application using simple_json_persistence
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 dependencies:
   logging: ^1.3.0
   logging_appenders:
     path: ../
 dev_dependencies:
-  pedantic: '>=1.5.0 <2.0.0'
+  lints: ^5.0.0

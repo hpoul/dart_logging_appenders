@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/exception_chain.dart';
@@ -38,7 +39,11 @@ typedef CausedByInfoFetcher = CausedByInfo? Function(Object? error);
 /// Opinionated log formatter which will give a decent format of [LogRecord]
 /// and adds stack trace and error messages if they are available.
 class DefaultLogRecordFormatter extends LogRecordFormatter {
-  const DefaultLogRecordFormatter();
+  const DefaultLogRecordFormatter({this.prefix});
+  DefaultLogRecordFormatter.withIsolatePrefix()
+      : this(prefix: '[${Isolate.current.debugName ?? 'unnamed'}] ');
+
+  final String? prefix;
 
   static List<CausedByInfoFetcher> causedByFetchers = [
     (error) => error is Exception ? error.getCausedByException() : null,
@@ -49,7 +54,7 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
-    sb.write('${rec.time} ${rec.level.name} '
+    sb.write('${prefix ?? ''}${rec.time} ${rec.level.name} '
         '${rec.loggerName} - ${rec.message}');
 
     void formatErrorAndStackTrace(final Object? error, StackTrace? stackTrace) {

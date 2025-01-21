@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:logging/logging.dart';
+import 'package:logging_appenders/src/base_appender.dart';
 import 'package:logging_appenders/src/logrecord_formatter.dart';
 import 'package:logging_appenders/src/print_appender.dart';
 
 LogRecordFormatter defaultLogRecordFormatter() => stdout.supportsAnsiEscapes
-    ? const ColorFormatter()
-    : const DefaultLogRecordFormatter();
+    ? ColorFormatter(BaseLogAppender.defaultFormatter())
+    : BaseLogAppender.defaultFormatter();
 
 PrintAppender defaultCreatePrintAppender({Level? stderrLevel}) =>
     IoPrintAppender(stderrLevel: stderrLevel);
