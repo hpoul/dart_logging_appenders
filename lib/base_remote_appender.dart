@@ -4,6 +4,6 @@
 /// appenders.
 /// If you build your own appenders, think about contributing back to the
 /// library ;-)
-library logging_appenders.base_remote_appender;
+library;
 
 export 'src/remote/base_remote_appender.dart';

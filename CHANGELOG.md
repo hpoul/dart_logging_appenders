@@ -1,3 +1,8 @@
+## 1.4.0-dev.1
+
+* Allow customizing of default Log Formatter using `BaseLogAppender.defaultFormatter`
+* By default prefix log messages by `Isolate.current.debugName`
+
 ## 1.3.1
 
 * Default formatter: add support for printing `cause` of [JsonUnsupportedObjectError]

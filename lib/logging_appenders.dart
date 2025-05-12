@@ -2,7 +2,7 @@
 ///
 /// The simplest use case is using the [PrintAppender.setupLogging]
 /// to create a logger which logs to stdout.
-library logging_appenders;
+library;
 
 export 'src/base_appender.dart' show LoggingAppenders, BaseLogAppender;
 export 'src/exception_chain.dart' show CausedByException;

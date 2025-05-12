@@ -19,8 +19,10 @@ class LoggingAppenders {
 /// loggers as well as [dispose]ing them.
 abstract class BaseLogAppender {
   BaseLogAppender(LogRecordFormatter? formatter)
-      : formatter = formatter ?? const DefaultLogRecordFormatter();
+      : formatter = formatter ?? defaultFormatter();
 
+  static LogRecordFormatter Function() defaultFormatter =
+      () => DefaultLogRecordFormatter.withIsolatePrefix();
   final LogRecordFormatter formatter;
   final List<StreamSubscription<dynamic>> _subscriptions =
       <StreamSubscription<dynamic>>[];
