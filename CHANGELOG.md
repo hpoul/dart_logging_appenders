@@ -1,7 +1,8 @@
-## 1.4.0-dev.1
+## 1.4.0
 
 * Allow customizing of default Log Formatter using `BaseLogAppender.defaultFormatter`
 * By default prefix log messages by `Isolate.current.debugName`
+* Export SyslogLevel
 
 ## 1.3.1
 
