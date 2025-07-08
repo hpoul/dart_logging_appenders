@@ -23,10 +23,14 @@ jobs:
       # https://github.com/dart-lang/setup-dart/blob/main/README.md
       - uses: dart-lang/setup-dart@v1
 
-      - run: tool/test-coverage.sh
+      - shell: bash
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: tool/test-coverage.sh
   analyze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1
-      - run: tool/test-analyze.sh
+      - shell: bash
+        run: tool/test-analyze.sh
