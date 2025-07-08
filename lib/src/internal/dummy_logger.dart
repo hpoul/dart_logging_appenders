@@ -81,16 +81,25 @@ class DummyLogger implements Logger {
   bool isLoggable(Level value) => (value >= level);
 
   @override
-  void log(Level logLevel, dynamic message,
-      [Object? error, StackTrace? stackTrace, Zone? zone]) {
+  void log(
+    Level logLevel,
+    dynamic message, [
+    Object? error,
+    StackTrace? stackTrace,
+    Zone? zone,
+  ]) {
     if (isLoggable(logLevel)) {
-      print(formatter.format(LogRecord(
-        logLevel,
-        '$message',
-        name,
-        error,
-        stackTrace,
-      )));
+      print(
+        formatter.format(
+          LogRecord(
+            logLevel,
+            '$message',
+            name,
+            error,
+            stackTrace,
+          ),
+        ),
+      );
     }
   }
 

@@ -9,7 +9,7 @@ import 'package:logging_appenders/src/logrecord_formatter.dart';
 /// stdout using `print()`.
 class PrintAppender extends BaseLogAppender {
   PrintAppender({LogRecordFormatter? formatter})
-      : super(formatter ?? defaultLogRecordFormatter());
+    : super(formatter ?? defaultLogRecordFormatter());
 
   /// Will setup the root logger with the given level and appends
   /// a new PrintAppender to it.

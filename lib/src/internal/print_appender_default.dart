@@ -9,5 +9,4 @@ LogRecordFormatter defaultLogRecordFormatter() =>
 PrintAppender defaultCreatePrintAppender({
   LogRecordFormatter? formatter,
   Level? stderrLevel,
-}) =>
-    PrintAppender(formatter: formatter);
+}) => PrintAppender(formatter: formatter);

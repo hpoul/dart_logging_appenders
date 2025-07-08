@@ -19,10 +19,10 @@ class LoggingAppenders {
 /// loggers as well as [dispose]ing them.
 abstract class BaseLogAppender {
   BaseLogAppender(LogRecordFormatter? formatter)
-      : formatter = formatter ?? defaultFormatter();
+    : formatter = formatter ?? defaultFormatter();
 
-  static LogRecordFormatter Function() defaultFormatter =
-      () => DefaultLogRecordFormatter.withIsolatePrefix();
+  static LogRecordFormatter Function() defaultFormatter = () =>
+      DefaultLogRecordFormatter.withIsolatePrefix();
   final LogRecordFormatter formatter;
   final List<StreamSubscription<dynamic>> _subscriptions =
       <StreamSubscription<dynamic>>[];
@@ -32,7 +32,8 @@ abstract class BaseLogAppender {
   void handle(LogRecord record);
 
   @protected
-  LogRecordListener logListener() => (LogRecord record) => handle(record);
+  LogRecordListener logListener() =>
+      (LogRecord record) => handle(record);
 
   void attachToLogger(Logger logger) {
     _subscriptions.add(logger.onRecord.listen(logListener()));
@@ -50,8 +51,9 @@ abstract class BaseLogAppender {
   }
 
   Future<void> _cancelSubscriptions() async {
-    final futures =
-        _subscriptions.map((sub) => sub.cancel()).toList(growable: false);
+    final futures = _subscriptions
+        .map((sub) => sub.cancel())
+        .toList(growable: false);
     _subscriptions.clear();
     await Future.wait<dynamic>(futures);
   }

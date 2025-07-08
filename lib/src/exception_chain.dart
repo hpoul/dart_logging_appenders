@@ -2,7 +2,10 @@
 
 final Expando<ErrorStack> _causedBy = Expando();
 T _wasCausedBy<T extends Exception>(
-    T target, Object cause, StackTrace causeStackTrace) {
+  T target,
+  Object cause,
+  StackTrace causeStackTrace,
+) {
   _causedBy[target] = (error: cause, stack: causeStackTrace);
   return target;
 }
@@ -32,8 +35,9 @@ extension CausedByException<E extends Exception> on E {
       return toString();
     }
     final error = cause.error;
-    final causeToString =
-        error is Exception ? error.toStringWithCause() : error.toString();
+    final causeToString = error is Exception
+        ? error.toStringWithCause()
+        : error.toString();
     return '${toString()} (cause: $causeToString)';
   }
 }

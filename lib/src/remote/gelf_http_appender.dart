@@ -44,10 +44,13 @@ class GelfHttpAppender extends BaseDioLogSender {
   }
 
   @override
-  Future<void> sendLogEventsWithDio(List<LogEntry> entries,
-      Map<String, String> userProperties, CancelToken cancelToken) {
+  Future<void> sendLogEventsWithDio(
+    List<LogEntry> entries,
+    Map<String, String> userProperties,
+    CancelToken cancelToken,
+  ) {
     final userProps = {
-      for (var e in userProperties.entries) '_${e.key}': e.value
+      for (var e in userProperties.entries) '_${e.key}': e.value,
     };
     final body = entries
         .map((e) {
@@ -82,19 +85,22 @@ class GelfHttpAppender extends BaseDioLogSender {
         )
         .then(
           (response) => Future<void>.value(null),
-//      _logger.finest('sent logs.');
+          //      _logger.finest('sent logs.');
         )
         .catchError((Object err, StackTrace stackTrace) {
-      String? message;
-      if (err is DioException) {
-        if (err.response != null) {
-          message = 'response:${err.response!.data}';
-        }
-      }
-      _logger.warning(
-          'Error while sending logs to graylog. $message', err, stackTrace);
-      return Future<void>.error(err, stackTrace);
-    });
+          String? message;
+          if (err is DioException) {
+            if (err.response != null) {
+              message = 'response:${err.response!.data}';
+            }
+          }
+          _logger.warning(
+            'Error while sending logs to graylog. $message',
+            err,
+            stackTrace,
+          );
+          return Future<void>.error(err, stackTrace);
+        });
   }
 }
 
@@ -108,8 +114,7 @@ enum SyslogLevel {
   warning(4, Level.CONFIG),
   notice(5, Level.FINE),
   information(6, Level.FINER),
-  debug(7, Level.FINEST),
-  ;
+  debug(7, Level.FINEST);
 
   const SyslogLevel(
     this.syslogValue,
@@ -137,14 +142,14 @@ class GelfPayload {
   final DateTime timestamp;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'level': logLevel.syslogValue,
-        'version': version,
-        'host': host,
-        'short_message': shortMessage,
-        if (fullMessage != null) 'full_message': fullMessage,
-        // timestamps must be seconds, but can have decimal places.
-        'timestamp': (timestamp.millisecondsSinceEpoch / 1000.0),
-      };
+    'level': logLevel.syslogValue,
+    'version': version,
+    'host': host,
+    'short_message': shortMessage,
+    if (fullMessage != null) 'full_message': fullMessage,
+    // timestamps must be seconds, but can have decimal places.
+    'timestamp': (timestamp.millisecondsSinceEpoch / 1000.0),
+  };
 }
 
 class LokiStream {
@@ -153,6 +158,8 @@ class LokiStream {
   final String labels;
   final List<LogEntry> entries;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'labels': labels, 'entries': entries};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'labels': labels,
+    'entries': entries,
+  };
 }

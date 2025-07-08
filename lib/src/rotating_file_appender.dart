@@ -28,7 +28,8 @@ class RotatingFileAppender extends BaseLogAppender {
     _outputFile = File(baseFilePath);
     if (!_outputFile.parent.existsSync()) {
       throw StateError(
-          'When initializing file logger, ${_outputFile.parent} must exist.');
+        'When initializing file logger, ${_outputFile.parent} must exist.',
+      );
     }
     _maybeRotate();
   }
@@ -71,7 +72,10 @@ class RotatingFileAppender extends BaseLogAppender {
         ..done.catchError((Object error, StackTrace stackTrace) {
           print('error while writing to logging file.');
           _logger.warning(
-              'Error while writing to logging file.', error, stackTrace);
+            'Error while writing to logging file.',
+            error,
+            stackTrace,
+          );
           return Future<dynamic>.error(error, stackTrace);
         });
 
@@ -97,10 +101,10 @@ class RotatingFileAppender extends BaseLogAppender {
     _closeAndFlushTimer = Timer(keepOpenDuration, () {
       _closeAndFlush();
     });
-//    _outputFile.writeAsString(
-//        (formatter.formatToStringBuffer(record, StringBuffer())..writeln())
-//            .toString(),
-//        mode: FileMode.append);
+    //    _outputFile.writeAsString(
+    //        (formatter.formatToStringBuffer(record, StringBuffer())..writeln())
+    //            .toString(),
+    //        mode: FileMode.append);
     _maybeRotate();
   }
 
@@ -188,8 +192,8 @@ class RotatingFileAppender extends BaseLogAppender {
 class AsyncInitializingLogHandler<T extends BaseLogAppender>
     extends BaseLogAppender {
   AsyncInitializingLogHandler({required this.builder})
-      : delegatedLogHandlerAsync = builder(),
-        super(null) {
+    : delegatedLogHandlerAsync = builder(),
+      super(null) {
     delegatedLogHandlerAsync.then((newLogHandler) {
       delegatedLogHandler = newLogHandler;
       _bufferedLogRecords!.forEach(handle);

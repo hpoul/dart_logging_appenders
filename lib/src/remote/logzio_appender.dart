@@ -35,17 +35,23 @@ class LogzIoApiAppender extends BaseDioLogSender {
   }
 
   @override
-  Future<void> sendLogEventsWithDio(List<LogEntry> entries,
-      Map<String, String> userProperties, CancelToken cancelToken) {
+  Future<void> sendLogEventsWithDio(
+    List<LogEntry> entries,
+    Map<String, String> userProperties,
+    CancelToken cancelToken,
+  ) {
     _logger.finest('Sending logs to $url');
     final body = entries
-        .map((entry) => {
-              '@timestamp': entry.ts.toUtc().toIso8601String(),
-              'message': entry.line,
-              'user': userProperties,
-            }
-              ..addAll(labels)
-              ..addAll(entry.lineLabels))
+        .map(
+          (entry) =>
+              {
+                  '@timestamp': entry.ts.toUtc().toIso8601String(),
+                  'message': entry.line,
+                  'user': userProperties,
+                }
+                ..addAll(labels)
+                ..addAll(entry.lineLabels),
+        )
         .map((map) => json.encode(map))
         .join('\n');
     return _client
@@ -55,8 +61,9 @@ class LogzIoApiAppender extends BaseDioLogSender {
           cancelToken: cancelToken,
           options: Options(
             contentType: ContentType(
-                    ContentType.json.primaryType, ContentType.json.subType)
-                .value,
+              ContentType.json.primaryType,
+              ContentType.json.subType,
+            ).value,
           ),
         )
         .then((val) => null);

@@ -19,8 +19,8 @@ abstract class BaseLogSender extends BaseLogAppender {
   BaseLogSender({
     LogRecordFormatter? formatter,
     int? bufferSize,
-  })  : bufferSize = bufferSize ?? 500,
-        super(formatter);
+  }) : bufferSize = bufferSize ?? 500,
+       super(formatter);
 
   Map<String, String> _userProperties = {};
 
@@ -37,14 +37,20 @@ abstract class BaseLogSender extends BaseLogAppender {
     _userProperties = userProperties;
   }
 
-  Future<void> log(Level logLevel, DateTime time, String line,
-      Map<String, String> lineLabels) {
-    return _logEvent(LogEntry(
-      logLevel: logLevel,
-      ts: time,
-      line: line,
-      lineLabels: lineLabels,
-    ));
+  Future<void> log(
+    Level logLevel,
+    DateTime time,
+    String line,
+    Map<String, String> lineLabels,
+  ) {
+    return _logEvent(
+      LogEntry(
+        logLevel: logLevel,
+        ts: time,
+        line: line,
+        lineLabels: lineLabels,
+      ),
+    );
   }
 
   Future<void> _logEvent(LogEntry log) {
@@ -64,19 +70,23 @@ abstract class BaseLogSender extends BaseLogAppender {
 
   @protected
   Stream<void> sendLogEvents(
-      List<LogEntry> logEntries, Map<String, String> userProperties);
+    List<LogEntry> logEntries,
+    Map<String, String> userProperties,
+  );
 
   Future<void> _triggerSendLogEvents() => Future(() {
-        final entries = _logEvents;
-        _logEvents = [];
-        _sendQueue.add(SimpleJobDef(
-          runner: (job) => sendLogEvents(entries, _userProperties),
-        ));
-        return _sendQueue.triggerJobRuns().then((val) {
-          _logger.finest('Sent log jobs: $val');
-          return null;
-        });
-      });
+    final entries = _logEvents;
+    _logEvents = [];
+    _sendQueue.add(
+      SimpleJobDef(
+        runner: (job) => sendLogEvents(entries, _userProperties),
+      ),
+    );
+    return _sendQueue.triggerJobRuns().then((val) {
+      _logger.finest('Sent log jobs: $val');
+      return null;
+    });
+  });
 
   @override
   void handle(LogRecord record) {
@@ -111,36 +121,48 @@ abstract class BaseDioLogSender extends BaseLogSender {
     super.bufferSize,
   });
 
-  Future<void> sendLogEventsWithDio(List<LogEntry> entries,
-      Map<String, String> userProperties, CancelToken cancelToken);
+  Future<void> sendLogEventsWithDio(
+    List<LogEntry> entries,
+    Map<String, String> userProperties,
+    CancelToken cancelToken,
+  );
 
   @override
   Stream<void> sendLogEvents(
-      List<LogEntry> logEntries, Map<String, String> userProperties) {
+    List<LogEntry> logEntries,
+    Map<String, String> userProperties,
+  ) {
     final cancelToken = CancelToken();
-    final streamController = StreamController<void>(onCancel: () {
-      cancelToken.cancel();
-    });
+    final streamController = StreamController<void>(
+      onCancel: () {
+        cancelToken.cancel();
+      },
+    );
     streamController.onListen = () {
-      sendLogEventsWithDio(logEntries, userProperties, cancelToken).then((val) {
-        if (!streamController.isClosed) {
-          streamController.add(null);
-          streamController.close();
-        }
-      }).catchError((dynamic err, StackTrace stackTrace) {
-        var message = err.runtimeType.toString();
-        if (err is DioException) {
-          if (err.response != null) {
-            message = 'response:${err.response!.data}';
-          }
-          _logger.warning(
-              'Error while sending logs. $message', err, stackTrace);
-          if (!streamController.isClosed) {
-            streamController.addError(err, stackTrace);
-            streamController.close();
-          }
-        }
-      });
+      sendLogEventsWithDio(logEntries, userProperties, cancelToken)
+          .then((val) {
+            if (!streamController.isClosed) {
+              streamController.add(null);
+              streamController.close();
+            }
+          })
+          .catchError((dynamic err, StackTrace stackTrace) {
+            var message = err.runtimeType.toString();
+            if (err is DioException) {
+              if (err.response != null) {
+                message = 'response:${err.response!.data}';
+              }
+              _logger.warning(
+                'Error while sending logs. $message',
+                err,
+                stackTrace,
+              );
+              if (!streamController.isClosed) {
+                streamController.addError(err, stackTrace);
+                streamController.close();
+              }
+            }
+          });
     };
     return streamController.stream;
   }
@@ -154,8 +176,9 @@ class LogEntry {
     required this.lineLabels,
   });
 
-  static final DateFormat _dateFormat =
-      DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  static final DateFormat _dateFormat = DateFormat(
+    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+  );
   final Level logLevel;
   final DateTime ts;
   final String line;
@@ -199,48 +222,60 @@ class SimpleJobQueue {
     _logger.finest('Triggering Job Runs. ${_queue.length}');
     final completer = Completer<int>();
     var successfulJobs = 0;
-//    final job = _queue.removeFirst();
-    _currentStream = (() async* {
-      final copyQueue = _queue.map((job) async {
-        await job.runner(job).drain(null);
-        return job;
-      }).toList(growable: false);
-      for (final job in copyQueue) {
-        yield await job;
-      }
-    })()
-        .listen((successJob) {
-      _queue.remove(successJob);
-      successfulJobs++;
-      _logger.finest(
-          'Success job. remaining: ${_queue.length} - completed: $successfulJobs');
-    }, onDone: () {
-      _logger.finest('All jobs done.');
-      _errorCount = 0;
-      _lastError = null;
+    //    final job = _queue.removeFirst();
+    _currentStream =
+        (() async* {
+          final copyQueue = _queue
+              .map((job) async {
+                await job.runner(job).drain(null);
+                return job;
+              })
+              .toList(growable: false);
+          for (final job in copyQueue) {
+            yield await job;
+          }
+        })().listen(
+          (successJob) {
+            _queue.remove(successJob);
+            successfulJobs++;
+            _logger.finest(
+              'Success job. remaining: ${_queue.length} - completed: $successfulJobs',
+            );
+          },
+          onDone: () {
+            _logger.finest('All jobs done.');
+            _errorCount = 0;
+            _lastError = null;
 
-      _currentStream = null;
-      completer.complete(successfulJobs);
-    }, onError: (Object error, StackTrace stackTrace) {
-      _logger.warning('Error while executing job', error, stackTrace);
-      _errorCount++;
-      _lastError = DateTime.now();
-      _currentStream!.cancel();
-      _currentStream = null;
-      completer.completeError(error, stackTrace);
+            _currentStream = null;
+            completer.complete(successfulJobs);
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            _logger.warning('Error while executing job', error, stackTrace);
+            _errorCount++;
+            _lastError = DateTime.now();
+            _currentStream!.cancel();
+            _currentStream = null;
+            completer.completeError(error, stackTrace);
 
-      const errorWait = 10;
-      final minWait =
-          Duration(seconds: errorWait * (_errorCount * _errorCount + 1));
-      if (_lastError!.difference(DateTime.now()).abs().compareTo(minWait) < 0) {
-        _logger.finest('There was an error. waiting at least $minWait');
-        if (_queue.length > maxQueueSize) {
-          _logger.finest('clearing log buffer. ${_queue.length}');
-          _queue.clear();
-        }
-      }
-      return Future.value(null);
-    });
+            const errorWait = 10;
+            final minWait = Duration(
+              seconds: errorWait * (_errorCount * _errorCount + 1),
+            );
+            if (_lastError!
+                    .difference(DateTime.now())
+                    .abs()
+                    .compareTo(minWait) <
+                0) {
+              _logger.finest('There was an error. waiting at least $minWait');
+              if (_queue.length > maxQueueSize) {
+                _logger.finest('clearing log buffer. ${_queue.length}');
+                _queue.clear();
+              }
+            }
+            return Future.value(null);
+          },
+        );
 
     return completer.future;
   }

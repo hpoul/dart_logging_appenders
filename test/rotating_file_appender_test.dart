@@ -15,7 +15,9 @@ import 'test_utils.dart';
 
 @isTest
 void tempDirTest<T>(
-    String description, Future<T> Function(Directory dir) callback) {
+  String description,
+  Future<T> Function(Directory dir) callback,
+) {
   test(description, () async {
     final dirName = description.replaceAll(RegExp('[^A-Za-z0-9]+'), '_');
     final dir = await Directory.systemTemp.createTemp('dartlang_test_$dirName');
@@ -55,7 +57,7 @@ void main() {
 
   tempDirTest('Check rotate', (dir) async {
     final logFile = path.join(dir.path, 'app.log');
-//    fakeAsync((async) {
+    //    fakeAsync((async) {
     print('clock: ${clock.now()} XXX ${_logRecord('blubb')}');
 
     final appender = RotatingFileAppender(
@@ -75,7 +77,7 @@ void main() {
     expect(File(logFile).existsSync(), true);
     expect(File('$logFile.1').existsSync(), true);
     appender.handle(_logRecord('bar'));
-//    }, initialTime: DateTime(2018));
+    //    }, initialTime: DateTime(2018));
     await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     await _debugFiles(dir);
     await appender.dispose();
@@ -105,7 +107,8 @@ Future<void> _debugFiles(Directory dir) async {
 
   await for (final entry in dir.list(recursive: true)) {
     print(
-        '    ${path.relative(entry.path, from: dir.path)}:\n      | ${File(entry.path).readAsStringSync().split('\n').join('\n      | ')}\n\n');
+      '    ${path.relative(entry.path, from: dir.path)}:\n      | ${File(entry.path).readAsStringSync().split('\n').join('\n      | ')}\n\n',
+    );
   }
   print('\n============================');
 }

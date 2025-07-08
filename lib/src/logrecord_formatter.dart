@@ -22,7 +22,7 @@ class BlockFormatter extends LogRecordFormatter {
   BlockFormatter._(this.block);
 
   BlockFormatter.formatRecord(String Function(LogRecord rec) formatter)
-      : this._((rec, sb) => sb.write(formatter(rec)));
+    : this._((rec, sb) => sb.write(formatter(rec)));
 
   final void Function(LogRecord rec, StringBuffer sb) block;
 
@@ -41,7 +41,7 @@ typedef CausedByInfoFetcher = CausedByInfo? Function(Object? error);
 class DefaultLogRecordFormatter extends LogRecordFormatter {
   const DefaultLogRecordFormatter({this.prefix});
   DefaultLogRecordFormatter.withIsolatePrefix()
-      : this(prefix: '[${Isolate.current.debugName ?? 'unnamed'}] ');
+    : this(prefix: '[${Isolate.current.debugName ?? 'unnamed'}] ');
 
   final String? prefix;
 
@@ -54,8 +54,10 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
-    sb.write('${prefix ?? ''}${rec.time} ${rec.level.name} '
-        '${rec.loggerName} - ${rec.message}');
+    sb.write(
+      '${prefix ?? ''}${rec.time} ${rec.level.name} '
+      '${rec.loggerName} - ${rec.message}',
+    );
 
     void formatErrorAndStackTrace(final Object? error, StackTrace? stackTrace) {
       if (error != null) {
@@ -88,16 +90,19 @@ class DefaultLogRecordFormatter extends LogRecordFormatter {
 /// dart:io logger which adds ansi escape characters to set the color
 /// of the output depending on log level.
 class ColorFormatter extends LogRecordFormatter {
-  const ColorFormatter(
-      [this.wrappedFormatter = const DefaultLogRecordFormatter()]);
+  const ColorFormatter([
+    this.wrappedFormatter = const DefaultLogRecordFormatter(),
+  ]);
 
   final LogRecordFormatter wrappedFormatter;
   static final Map<Level, _AnsiCombination?> _colorCache = {};
 
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
-    final color =
-        _colorCache.putIfAbsent(rec.level, () => _colorForLevel(rec.level));
+    final color = _colorCache.putIfAbsent(
+      rec.level,
+      () => _colorForLevel(rec.level),
+    );
     if (color != null) {
       sb.write(color.escape);
       wrappedFormatter.formatToStringBuffer(rec, sb);
@@ -129,8 +134,10 @@ class _AnsiCombination {
   _AnsiCombination._(this.escape, this.resetEscape);
 
   _AnsiCombination.combine(List<ansi.AnsiCode> codes)
-      : this._(codes.map((code) => code.escape).join(),
-            codes.map((code) => code.reset?.escape).join());
+    : this._(
+        codes.map((code) => code.escape).join(),
+        codes.map((code) => code.reset?.escape).join(),
+      );
 
   final String escape;
   final String resetEscape;
