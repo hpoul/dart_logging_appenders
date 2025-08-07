@@ -1,0 +1,1 @@
+const testIsWeb = true;

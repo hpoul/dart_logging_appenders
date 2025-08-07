@@ -1,9 +1,11 @@
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/exception_chain.dart';
+
 import 'internal/ansi.dart' as ansi;
+import 'logrecord_formatter.prefix.dart'
+    if (dart.library.isolate) 'logrecord_formatter.prefix_isolate.dart';
 
 /// Base class for formatters which are responsible for converting
 /// [LogRecord]s to strings.
@@ -40,8 +42,7 @@ typedef CausedByInfoFetcher = CausedByInfo? Function(Object? error);
 /// and adds stack trace and error messages if they are available.
 class DefaultLogRecordFormatter extends LogRecordFormatter {
   const DefaultLogRecordFormatter({this.prefix});
-  DefaultLogRecordFormatter.withIsolatePrefix()
-    : this(prefix: '[${Isolate.current.debugName ?? 'unnamed'}] ');
+  DefaultLogRecordFormatter.withIsolatePrefix() : this(prefix: isolatePrefix());
 
   final String? prefix;
 

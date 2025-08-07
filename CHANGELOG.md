@@ -1,3 +1,7 @@
+## 1.4.0+1
+
+* Don't try to use dart:isolate on web.
+
 ## 1.4.0
 
 * Allow customizing of default Log Formatter using `BaseLogAppender.defaultFormatter`

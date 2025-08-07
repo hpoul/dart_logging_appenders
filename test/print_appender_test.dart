@@ -37,4 +37,23 @@ void main() {
     expect(printLog, equals(['mock']));
     verify(formatter.format(any)).called(1);
   });
+  test('Test real print logger', () async {
+    // this test basically validates that the default `PrintAppender`
+    // implementation does not throw. Especially for dart:web.
+    // so tests have to be run using:
+    // `> dart run test -p chrome test/print_appender_test.dart`
+    final dummyLogger = Logger.detached('dummy');
+    final appender = PrintAppender();
+    final printLog = <String>[];
+    TestUtils.overridePrint(printLog, () {
+      appender.attachToLogger(dummyLogger);
+      dummyLogger.info('foo', 'bar');
+    });
+    final webMatcher = RegExp(r'^[0-9- :\.]*?\d\d\d INFO');
+    final ioMatcher = RegExp(r'^\[test_suite.*?\] [0-9- :\.]*?\d\d\d INFO');
+    final line = printLog.last;
+    print('log (isWeb: ${TestUtils.isWeb}): $line');
+    expect(ioMatcher.hasMatch(line), TestUtils.isWeb ? isFalse : isTrue);
+    expect(webMatcher.hasMatch(line), TestUtils.isWeb ? isTrue : isFalse);
+  });
 }
