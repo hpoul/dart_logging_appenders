@@ -1,3 +1,5 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:async';
 import 'dart:io';
 
@@ -70,7 +72,6 @@ class RotatingFileAppender extends BaseLogAppender {
   IOSink _getOpenOutputFileSink() =>
       _outputFileSink ??= _outputFile.openWrite(mode: FileMode.append)
         ..done.catchError((Object error, StackTrace stackTrace) {
-          print('error while writing to logging file.');
           _logger.warning(
             'Error while writing to logging file.',
             error,
@@ -82,16 +83,29 @@ class RotatingFileAppender extends BaseLogAppender {
   static int id = 0;
   final int instanceId = id++;
 
+  final List<String> _rotateBuffer = <String>[];
+  bool _inFlushAndClose = false;
+
   @override
   void handle(LogRecord record) {
     if (record.loggerName == _logger.fullName) {
       // ignore my own log messages.
       return;
     }
+    final rotating = _nextRotateCheck == null || _inFlushAndClose;
+    if (rotating) {
+      _rotateBuffer.add(formatter.format(record));
+      return;
+    } else if (_rotateBuffer.isNotEmpty) {
+      final sink = _getOpenOutputFileSink();
+      for (final line in _rotateBuffer) {
+        sink.writeln(line);
+      }
+      _rotateBuffer.clear();
+    }
     try {
       _getOpenOutputFileSink().writeln(formatter.format(record));
     } catch (error, stackTrace) {
-      print('error while writing log $error $stackTrace');
       _logger.warning('Error while writing log.', error, stackTrace);
       _closeAndFlush();
       // try once more.
@@ -118,42 +132,37 @@ class RotatingFileAppender extends BaseLogAppender {
     }
     _nextRotateCheck = null;
     try {
+      // Rotate the file if it can be read & reached its size limit
+      var rotate = false;
       try {
-        final length = await File(_outputFile.path).length();
-        if (length < rotateAtSizeBytes) {
-          return false;
+        if (await File(_outputFile.path).length() > rotateAtSizeBytes) {
+          rotate = true;
         }
-      } on FileSystemException catch (_) {
-        // if .length() throws an error, ignore it.
-        return false;
       } catch (e, stackTrace) {
         _logger.warning('Error while checking file length.', e, stackTrace);
-        rethrow;
+      }
+      if (!rotate) {
+        return false;
       }
 
-      Future<void>? flushFuture;
-      for (var i = keepRotateCount - 1; i >= 0; i--) {
+      // Rotate files that are not currently used
+      for (var i = keepRotateCount - 1; i >= 1; i--) {
         final file = File(_fileNameForRotation(i));
         if (file.existsSync()) {
-          try {
-            await file.rename(_fileNameForRotation(i + 1));
-          } on FileSystemException catch (_) {
-            if (i == 0) {
-              // open file can't be renamed on Windows, so close file and retry
-              flushFuture = _closeAndFlush();
-              await flushFuture;
-              await file.rename(_fileNameForRotation(i + 1));
-            } else {
-              rethrow;
-            }
-          }
+          await file.rename(_fileNameForRotation(i + 1));
         }
       }
 
-      // initiate flush if not already running
-      flushFuture ??= _closeAndFlush();
+      // Close file before renaming the last, currently-in-use file
+      await _closeAndFlush();
+
+      // Rename the last file
+      final file = File(_fileNameForRotation(0));
+      if (file.existsSync()) {
+        await file.rename(_fileNameForRotation(1));
+      }
+
       handle(LogRecord(Level.INFO, 'Rotated log.', '_'));
-      await flushFuture;
       return true;
     } finally {
       _nextRotateCheck = clock.now().add(rotateCheckInterval);
@@ -163,13 +172,26 @@ class RotatingFileAppender extends BaseLogAppender {
   Future<void> _closeAndFlush() async {
     _closeAndFlushTimer?.cancel();
     _closeAndFlushTimer = null;
+
+    // It can happen that the first log entries are put in a buffer without the sink being opened.
+    // Open the sink in this case, so buffered data gets written and flushed.
+    if (_rotateBuffer.isNotEmpty) _getOpenOutputFileSink();
+
     if (_outputFileSink != null) {
       try {
         final oldSink = _outputFileSink!;
+        for (final line in _rotateBuffer) {
+          oldSink.writeln(line);
+        }
+        _rotateBuffer.clear();
+
         _outputFileSink = null;
+        _inFlushAndClose = true;
         await oldSink.flush();
         await oldSink.close();
+        _inFlushAndClose = false;
       } catch (e, stackTrace) {
+        _inFlushAndClose = false;
         _logger.warning('Error while flushing, closing stream.', e, stackTrace);
       }
     }
