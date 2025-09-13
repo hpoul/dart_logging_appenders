@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/base_appender.dart';
@@ -114,17 +114,46 @@ abstract class BaseLogSender extends BaseLogAppender {
   }
 }
 
-/// Helper base class to handle Dio errors during network requests.
-abstract class BaseDioLogSender extends BaseLogSender {
-  BaseDioLogSender({
+class HttpLogException extends http.ClientException {
+  HttpLogException(
+    String message, {
+    Uri? uri,
+    required this.statusCode,
+  }) : super(message, uri);
+
+  final int statusCode;
+}
+
+/// Helper base class to handle http errors during network requests.
+abstract class BaseHttpLogSender extends BaseLogSender {
+  BaseHttpLogSender({
     super.formatter,
     super.bufferSize,
   });
 
+  @protected
+  late final http.Client client = http.Client();
+
+  @override
+  Future<void> dispose() async {
+    client.close();
+    await super.dispose();
+  }
+
+  @protected
+  Future<void> sendRequest(http.BaseRequest request) async {
+    final streamedResponse = await client.send(request);
+    if (streamedResponse.statusCode case int code
+        when code < 200 || code > 299) {
+      throw HttpLogException('Invalid status code: $code', statusCode: code);
+    }
+    await http.Response.fromStream(streamedResponse);
+  }
+
   Future<void> sendLogEventsWithDio(
     List<LogEntry> entries,
     Map<String, String> userProperties,
-    CancelToken cancelToken,
+    Future<void> cancelToken,
   );
 
   @override
@@ -132,14 +161,14 @@ abstract class BaseDioLogSender extends BaseLogSender {
     List<LogEntry> logEntries,
     Map<String, String> userProperties,
   ) {
-    final cancelToken = CancelToken();
+    final cancelToken = Completer<void>();
     final streamController = StreamController<void>(
       onCancel: () {
-        cancelToken.cancel();
+        cancelToken.complete();
       },
     );
     streamController.onListen = () {
-      sendLogEventsWithDio(logEntries, userProperties, cancelToken)
+      sendLogEventsWithDio(logEntries, userProperties, cancelToken.future)
           .then((val) {
             if (!streamController.isClosed) {
               streamController.add(null);
@@ -148,10 +177,8 @@ abstract class BaseDioLogSender extends BaseLogSender {
           })
           .catchError((dynamic err, StackTrace stackTrace) {
             var message = err.runtimeType.toString();
-            if (err is DioException) {
-              if (err.response != null) {
-                message = 'response:${err.response!.data}';
-              }
+            if (err is http.ClientException) {
+              message = err.message;
               _logger.warning(
                 'Error while sending logs. $message',
                 err,

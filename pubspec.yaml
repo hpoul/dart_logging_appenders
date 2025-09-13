@@ -1,6 +1,6 @@
 name: logging_appenders
 description: Logging appenders for the dart logging package for print, file and remote (logz, loki, graylog (gelf)).
-version: 1.4.0+1
+version: 2.0.0-dev.1
 homepage: https://github.com/hpoul/dart_logging_appenders/
 screenshots:
   - description: Colored console output
@@ -12,9 +12,9 @@ environment:
 dependencies:
   meta: ">=1.3.0 <2.0.0"
   logging: '>=1.2.0 <2.0.0'
-  dio: ">=5.2.0 <6.0.0"
   intl: ">=0.17.0 <1.0.0"
   clock: ">=1.1.0 <2.0.0"
+  http: ^1.5.0
 
 dev_dependencies:
   test: ^1.25.2

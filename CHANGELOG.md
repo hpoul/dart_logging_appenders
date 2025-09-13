@@ -1,3 +1,7 @@
+## 2.0.0-dev.1
+
+* Migrate away from `dio` to `http` package.
+
 ## 1.4.0+1
 
 * Don't try to use dart:isolate on web.

@@ -2,15 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 
+// ignore: unused_element
 final _logger = DummyLogger('logging_appenders.loki_appender');
 
 /// Appender used to push logs to [Loki](https://github.com/grafana/loki).
-class LokiApiAppender extends BaseDioLogSender {
+class LokiApiAppender extends BaseHttpLogSender {
   LokiApiAppender({
     required this.server,
     required this.username,
@@ -32,8 +33,6 @@ class LokiApiAppender extends BaseDioLogSender {
     "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
   );
 
-  late final Dio _client = Dio();
-
   static String _encodeLineLabelValue(String value) {
     if (value.contains(' ')) {
       return json.encode(value);
@@ -42,16 +41,10 @@ class LokiApiAppender extends BaseDioLogSender {
   }
 
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-    _client.close();
-  }
-
-  @override
   Future<void> sendLogEventsWithDio(
     List<LogEntry> entries,
     Map<String, String> userProperties,
-    CancelToken cancelToken,
+    Future<void> cancelToken,
   ) {
     final jsonObject = LokiPushBody([
       LokiStream(labelsString, entries),
@@ -76,39 +69,49 @@ class LokiApiAppender extends BaseDioLogSender {
         return obj.toJson();
       },
     );
-    return _client
-        .post<dynamic>(
-          'https://$server/api/prom/push',
-          cancelToken: cancelToken,
-          data: jsonBody,
-          options: Options(
-            headers: <String, String>{
-              HttpHeaders.authorizationHeader: authHeader,
-            },
-            contentType: ContentType(
-              ContentType.json.primaryType,
-              ContentType.json.subType,
-            ).value,
-          ),
+    return sendRequest(
+      http.AbortableRequest(
+          'POST',
+          Uri.parse('https://$server/api/prom/push'),
+          abortTrigger: cancelToken,
         )
-        .then(
-          (response) => Future<void>.value(null),
-          //      _logger.finest('sent logs.');
-        )
-        .catchError((Object err, StackTrace stackTrace) {
-          String? message;
-          if (err is DioException) {
-            if (err.response != null) {
-              message = 'response:${err.response!.data}';
-            }
-          }
-          _logger.warning(
-            'Error while sending logs to loki. $message',
-            err,
-            stackTrace,
-          );
-          return Future<void>.error(err, stackTrace);
-        });
+        ..body = jsonBody
+        ..headers[HttpHeaders.authorizationHeader] = authHeader
+        ..headers[HttpHeaders.contentTypeHeader] = ContentType.json.value,
+    );
+    // return _client
+    //     .post<dynamic>(
+    //       'https://$server/api/prom/push',
+    //       cancelToken: cancelToken,
+    //       data: jsonBody,
+    //       options: Options(
+    //         headers: <String, String>{
+    //           HttpHeaders.authorizationHeader: authHeader,
+    //         },
+    //         contentType: ContentType(
+    //           ContentType.json.primaryType,
+    //           ContentType.json.subType,
+    //         ).value,
+    //       ),
+    //     )
+    //     .then(
+    //       (response) => Future<void>.value(null),
+    //       //      _logger.finest('sent logs.');
+    //     )
+    //     .catchError((Object err, StackTrace stackTrace) {
+    //       String? message;
+    //       if (err is DioException) {
+    //         if (err.response != null) {
+    //           message = 'response:${err.response!.data}';
+    //         }
+    //       }
+    //       _logger.warning(
+    //         'Error while sending logs to loki. $message',
+    //         err,
+    //         stackTrace,
+    //       );
+    //       return Future<void>.error(err, stackTrace);
+    //     });
   }
 }
 

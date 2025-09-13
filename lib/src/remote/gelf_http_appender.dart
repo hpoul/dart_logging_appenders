@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 
+// ignore: unused_element
 final _logger = DummyLogger('logging_appenders.loki_appender');
 
 SyslogLevel _defaultToSyslogLevel(Level level) {
@@ -17,7 +18,7 @@ SyslogLevel _defaultToSyslogLevel(Level level) {
 
 /// Graylog Http appender https://go2docs.graylog.org/5-0/getting_in_log_data/ingest_gelf.html?tocpath=Getting%20in%20Logs%7CLog%20Sources%7CGELF%7C_____1
 /// BULK receiving *must* be enabled. (enable_bulk_receiving)
-class GelfHttpAppender extends BaseDioLogSender {
+class GelfHttpAppender extends BaseHttpLogSender {
   GelfHttpAppender({
     required this.endpoint,
     required this.host,
@@ -27,6 +28,7 @@ class GelfHttpAppender extends BaseDioLogSender {
   });
 
   final String endpoint;
+  late final Uri endpointUri = Uri.parse(endpoint);
 
   /// the name of the host, source or application that sent this message;
   /// MUST be set by the client library.
@@ -35,20 +37,12 @@ class GelfHttpAppender extends BaseDioLogSender {
   /// convert log levels of logging package to syslog levels.
   final SyslogLevel Function(Level level) toLogLevel;
 
-  late final Dio _client = Dio();
-
-  @override
-  Future<void> dispose() async {
-    await super.dispose();
-    _client.close();
-  }
-
   @override
   Future<void> sendLogEventsWithDio(
     List<LogEntry> entries,
     Map<String, String> userProperties,
-    CancelToken cancelToken,
-  ) {
+    Future<void> cancelToken,
+  ) async {
     final userProps = {
       for (var e in userProperties.entries) '_${e.key}': e.value,
     };
@@ -77,30 +71,10 @@ class GelfHttpAppender extends BaseDioLogSender {
         })
         .map((e) => json.encode(e))
         .join('\n');
-    return _client
-        .post<dynamic>(
-          endpoint,
-          cancelToken: cancelToken,
-          data: body,
-        )
-        .then(
-          (response) => Future<void>.value(null),
-          //      _logger.finest('sent logs.');
-        )
-        .catchError((Object err, StackTrace stackTrace) {
-          String? message;
-          if (err is DioException) {
-            if (err.response != null) {
-              message = 'response:${err.response!.data}';
-            }
-          }
-          _logger.warning(
-            'Error while sending logs to graylog. $message',
-            err,
-            stackTrace,
-          );
-          return Future<void>.error(err, stackTrace);
-        });
+    return sendRequest(
+      http.AbortableRequest('POST', endpointUri, abortTrigger: cancelToken)
+        ..body = body,
+    );
   }
 }
 

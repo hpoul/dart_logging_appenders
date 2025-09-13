@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:logging_appenders/src/internal/dummy_logger.dart';
 import 'package:logging_appenders/src/remote/base_remote_appender.dart';
 
@@ -11,7 +11,7 @@ final _logger = DummyLogger('logging_appenders.logzio_appender');
 
 /// Appender which sends all logs to https://logz.io/
 /// Uses
-class LogzIoApiAppender extends BaseDioLogSender {
+class LogzIoApiAppender extends BaseHttpLogSender {
   LogzIoApiAppender({
     super.formatter,
     required this.apiToken,
@@ -26,19 +26,11 @@ class LogzIoApiAppender extends BaseDioLogSender {
   final Map<String, String> labels;
   final String type;
 
-  late final Dio _client = Dio();
-
-  @override
-  Future<void> dispose() async {
-    await super.dispose();
-    _client.close();
-  }
-
   @override
   Future<void> sendLogEventsWithDio(
     List<LogEntry> entries,
     Map<String, String> userProperties,
-    CancelToken cancelToken,
+    Future<void> cancelToken,
   ) {
     _logger.finest('Sending logs to $url');
     final body = entries
@@ -54,18 +46,18 @@ class LogzIoApiAppender extends BaseDioLogSender {
         )
         .map((map) => json.encode(map))
         .join('\n');
-    return _client
-        .post<dynamic>(
-          '$url?token=$apiToken&type=$type',
-          data: body,
-          cancelToken: cancelToken,
-          options: Options(
-            contentType: ContentType(
-              ContentType.json.primaryType,
-              ContentType.json.subType,
-            ).value,
-          ),
+    return sendRequest(
+      http.AbortableRequest(
+          'POST',
+          Uri.parse('$url?token=$apiToken&type=$type'),
+          abortTrigger: cancelToken,
         )
-        .then((val) => null);
+        ..body = body
+        // ..headers[HttpHeaders.contentTypeHeader] = ContentType.json.value,
+        ..headers[HttpHeaders.contentTypeHeader] = ContentType(
+          ContentType.json.primaryType,
+          ContentType.json.subType,
+        ).value,
+    );
   }
 }
