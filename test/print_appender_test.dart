@@ -50,7 +50,8 @@ void main() {
       dummyLogger.info('foo', 'bar');
     });
     final webMatcher = RegExp(r'^[0-9- :\.]*?\d\d\d INFO');
-    final ioMatcher = RegExp(r'^\[test_suite.*?\] [0-9- :\.]*?\d\d\d INFO');
+    // dart.io should add an Isolate name before the message.
+    final ioMatcher = RegExp(r'^\[[^\]]+\] [0-9- :\.]*?\d\d\d INFO');
     final line = printLog.last;
     print('log (isWeb: ${TestUtils.isWeb}): $line');
     expect(ioMatcher.hasMatch(line), TestUtils.isWeb ? isFalse : isTrue);
