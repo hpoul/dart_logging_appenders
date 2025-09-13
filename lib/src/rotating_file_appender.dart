@@ -196,7 +196,7 @@ class AsyncInitializingLogHandler<T extends BaseLogAppender>
       super(null) {
     delegatedLogHandlerAsync.then((newLogHandler) {
       delegatedLogHandler = newLogHandler;
-      _bufferedLogRecords!.forEach(handle);
+      _bufferedLogRecords?.forEach(handle);
       _bufferedLogRecords = null;
       return newLogHandler;
     });
@@ -209,8 +209,8 @@ class AsyncInitializingLogHandler<T extends BaseLogAppender>
 
   @override
   void handle(LogRecord record) {
-    if (delegatedLogHandler != null) {
-      return delegatedLogHandler!.handle(record);
+    if (delegatedLogHandler case final delegatedLogHandler?) {
+      return delegatedLogHandler.handle(record);
     }
     _bufferedLogRecords!.add(record);
   }

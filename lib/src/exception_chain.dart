@@ -30,7 +30,7 @@ extension CausedByException<E extends Exception> on E {
 
   /// calls [toString] appended by the caused exception, if any.
   String toStringWithCause() {
-    final cause = this.getCausedByException();
+    final cause = getCausedByException();
     if (cause == null) {
       return toString();
     }
