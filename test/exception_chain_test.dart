@@ -12,8 +12,11 @@ enum Foo {
 }
 
 void main() {
-  PrintAppender.setupLogging();
+  // PrintAppender.setupLogging();
   group('main', () {
+    setUp(() {
+      PrintAppender.setupLogging();
+    });
     test('json error', () {
       try {
         json.encode(Foo.bar);
