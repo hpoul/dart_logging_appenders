@@ -41,7 +41,7 @@ class LokiApiAppender extends BaseHttpLogSender {
   }
 
   @override
-  Future<void> sendLogEventsWithDio(
+  Future<void> sendLogEventsWithHttp(
     List<LogEntry> entries,
     Map<String, String> userProperties,
     Future<void> cancelToken,
@@ -79,39 +79,6 @@ class LokiApiAppender extends BaseHttpLogSender {
         ..headers[HttpHeaders.authorizationHeader] = authHeader
         ..headers[HttpHeaders.contentTypeHeader] = ContentType.json.value,
     );
-    // return _client
-    //     .post<dynamic>(
-    //       'https://$server/api/prom/push',
-    //       cancelToken: cancelToken,
-    //       data: jsonBody,
-    //       options: Options(
-    //         headers: <String, String>{
-    //           HttpHeaders.authorizationHeader: authHeader,
-    //         },
-    //         contentType: ContentType(
-    //           ContentType.json.primaryType,
-    //           ContentType.json.subType,
-    //         ).value,
-    //       ),
-    //     )
-    //     .then(
-    //       (response) => Future<void>.value(null),
-    //       //      _logger.finest('sent logs.');
-    //     )
-    //     .catchError((Object err, StackTrace stackTrace) {
-    //       String? message;
-    //       if (err is DioException) {
-    //         if (err.response != null) {
-    //           message = 'response:${err.response!.data}';
-    //         }
-    //       }
-    //       _logger.warning(
-    //         'Error while sending logs to loki. $message',
-    //         err,
-    //         stackTrace,
-    //       );
-    //       return Future<void>.error(err, stackTrace);
-    //     });
   }
 }
 

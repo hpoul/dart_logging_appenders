@@ -27,7 +27,7 @@ class LogzIoApiAppender extends BaseHttpLogSender {
   final String type;
 
   @override
-  Future<void> sendLogEventsWithDio(
+  Future<void> sendLogEventsWithHttp(
     List<LogEntry> entries,
     Map<String, String> userProperties,
     Future<void> cancelToken,

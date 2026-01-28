@@ -150,7 +150,7 @@ abstract class BaseHttpLogSender extends BaseLogSender {
     await http.Response.fromStream(streamedResponse);
   }
 
-  Future<void> sendLogEventsWithDio(
+  Future<void> sendLogEventsWithHttp(
     List<LogEntry> entries,
     Map<String, String> userProperties,
     Future<void> cancelToken,
@@ -168,7 +168,7 @@ abstract class BaseHttpLogSender extends BaseLogSender {
       },
     );
     streamController.onListen = () {
-      sendLogEventsWithDio(logEntries, userProperties, cancelToken.future)
+      sendLogEventsWithHttp(logEntries, userProperties, cancelToken.future)
           .then((val) {
             if (!streamController.isClosed) {
               streamController.add(null);

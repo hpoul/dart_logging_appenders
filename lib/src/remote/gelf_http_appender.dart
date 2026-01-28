@@ -38,7 +38,7 @@ class GelfHttpAppender extends BaseHttpLogSender {
   final SyslogLevel Function(Level level) toLogLevel;
 
   @override
-  Future<void> sendLogEventsWithDio(
+  Future<void> sendLogEventsWithHttp(
     List<LogEntry> entries,
     Map<String, String> userProperties,
     Future<void> cancelToken,
