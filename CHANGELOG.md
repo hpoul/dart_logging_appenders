@@ -1,6 +1,7 @@
-## 2.0.0-dev.1
+## 2.0.0
 
 * Migrate away from `dio` to `http` package.
+* This is a breaking change for subclasses of `BaseDioLogSender` which is now called `BaseHttpLogSender`
 
 ## 1.4.0+1
 
