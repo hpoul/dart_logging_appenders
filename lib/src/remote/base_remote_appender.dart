@@ -11,6 +11,8 @@ import 'package:meta/meta.dart';
 
 final _logger = DummyLogger('logging_appenders.base_remote_appender');
 
+set loggingAppenderInternalLogging(Level level) => _logger.level = level;
+
 /// Base appender for services which should buffer log messages before
 /// handling them. (eg. because they use network traffic which make it
 /// unfeasible to send every log line on it's own).

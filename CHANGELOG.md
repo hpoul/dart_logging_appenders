@@ -1,3 +1,7 @@
+## 2.0.0+1
+
+* Expose `loggingAppenderInternalLogging` setter to change log level vor internal (dummy) logger.
+
 ## 2.0.0
 
 * Migrate away from `dio` to `http` package.
