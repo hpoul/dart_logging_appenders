@@ -65,7 +65,7 @@ class LokiApiAppender extends BaseHttpLogSender {
   Map<String, String> get requestHeaders {
     final auth = configuration.authConfiguration;
     if (auth == null) {
-      return const {};
+      return <String, String>{};
     }
     return {HttpHeaders.authorizationHeader: auth.basicAuthHeader};
   }
@@ -88,7 +88,7 @@ class LokiApiAppender extends BaseHttpLogSender {
   /// Encodes [entry] as a Loki `values` row.
   ///
   /// Returns `[timestamp, line]` with an additional structured-metadata
-  /// element when [userProperties] is not empty.
+  /// element when `userProperties` is not empty.
   @visibleForTesting
   static List<Object> encodeValue(
     LogEntry entry,
@@ -115,12 +115,12 @@ class LokiApiAppender extends BaseHttpLogSender {
     List<LogEntry> entries,
     Map<String, String> userProperties,
   ) {
-    final levels = entries.map((entry) => entry.logLevel).toSet();
+    final levels = entries.map((entry) => entry.logLevel.name).toSet();
     final streams = [
       for (final level in levels)
         LokiStream(
-          {...configuration.labels, 'level': level.name},
-          entries.where((entry) => entry.logLevel == level).toList(),
+          {...configuration.labels, 'level': level},
+          entries.where((entry) => entry.logLevel.name == level).toList(),
         ),
     ];
     return json.encode(
@@ -129,7 +129,11 @@ class LokiApiAppender extends BaseHttpLogSender {
         if (obj is LogEntry) {
           return encodeValue(obj, userProperties);
         }
-        return obj.toJson();
+        throw ArgumentError.value(
+          obj,
+          'obj',
+          'Unexpected object in Loki push body.',
+        );
       },
     );
   }

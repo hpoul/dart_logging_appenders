@@ -1,7 +1,7 @@
 import 'package:logging_appenders/src/remote/loki_auth_configuration.dart';
 import 'package:logging_appenders/src/remote/loki_connection_type.dart';
 
-/// Configuration for [LokiApiAppender].
+/// Configuration for `LokiApiAppender`.
 class LokiConfiguration {
   LokiConfiguration({
     required this.server,
@@ -9,8 +9,8 @@ class LokiConfiguration {
     this.authConfiguration,
     required this.labels,
   }) : assert(
-         !server.contains('://'),
-         'server must be a plain host, without scheme.',
+         !server.contains('://') && !server.contains('/'),
+         'server must be a plain host, without scheme or path.',
        );
 
   /// Host (and optional port) of the Loki server, e.g. `loki:3100`.

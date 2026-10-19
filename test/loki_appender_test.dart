@@ -57,9 +57,13 @@ void main() {
       expect(config.authConfiguration, isNull);
     });
 
-    test('rejects server with scheme', () {
+    test('rejects server with scheme or path', () {
       expect(
         () => LokiConfiguration(server: 'https://loki', labels: {}),
+        throwsA(isA<AssertionError>()),
+      );
+      expect(
+        () => LokiConfiguration(server: 'loki/push', labels: {}),
         throwsA(isA<AssertionError>()),
       );
     });
@@ -177,6 +181,49 @@ void main() {
         ], const {}),
       );
       expect(value[1], 'msg="has space" - hello');
+    });
+
+    test('buildJsonBody renders bare line without line labels', () {
+      final value = singleValueOf(
+        appenderWithoutAuth().buildJsonBody([
+          entry(lineLabels: const {}),
+        ], const {}),
+      );
+      expect(value[1], 'hello');
+    });
+
+    test('buildJsonBody level label takes precedence', () {
+      final appender = LokiApiAppender.withConfiguration(
+        configuration: LokiConfiguration(
+          server: 'loki:3100',
+          labels: const {'app': 'test', 'level': 'custom'},
+        ),
+      );
+      final body =
+          json.decode(appender.buildJsonBody([entry()], const {}))
+              as Map<String, dynamic>;
+      final streams = body['streams'] as List<dynamic>;
+      expect(
+        (streams.single as Map<String, dynamic>)['stream'],
+        {'app': 'test', 'level': 'INFO'},
+      );
+    });
+
+    test('buildJsonBody merges equal level names into one stream', () {
+      final body =
+          json.decode(
+                appenderWithoutAuth().buildJsonBody([
+                  entry(level: Level('CUSTOM', 850)),
+                  entry(level: Level('CUSTOM', 850)),
+                ], const {}),
+              )
+              as Map<String, dynamic>;
+      final streams = body['streams'] as List<dynamic>;
+      expect(streams, hasLength(1));
+      expect(
+        (streams.single as Map<String, dynamic>)['stream'],
+        {'app': 'test', 'level': 'CUSTOM'},
+      );
     });
 
     test('buildJsonBody attaches userProperties as structured metadata', () {
