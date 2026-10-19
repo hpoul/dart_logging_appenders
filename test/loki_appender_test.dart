@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 
 class TestLokiAppender extends LokiApiAppender {
   TestLokiAppender(LokiConfiguration configuration)
-      : super.withConfiguration(configuration: configuration);
+    : super.withConfiguration(configuration: configuration);
 
   http.BaseRequest? lastRequest;
 
@@ -35,13 +35,12 @@ void main() {
     Level level = Level.INFO,
     String line = 'hello',
     Map<String, String> lineLabels = const {'lvl': 'INFO', 'logger': 'test'},
-  }) =>
-      LogEntry(
-        logLevel: level,
-        ts: DateTime.fromMicrosecondsSinceEpoch(1700000000000000, isUtc: true),
-        line: line,
-        lineLabels: lineLabels,
-      );
+  }) => LogEntry(
+    logLevel: level,
+    ts: DateTime.fromMicrosecondsSinceEpoch(1700000000000000, isUtc: true),
+    line: line,
+    lineLabels: lineLabels,
+  );
 
   List<dynamic> singleValueOf(String jsonBody) {
     final body = json.decode(jsonBody) as Map<String, dynamic>;
@@ -135,17 +134,19 @@ void main() {
     });
 
     test('buildJsonBody groups entries by level', () {
-      final body = json.decode(
-        appenderWithoutAuth().buildJsonBody([
-          entry(line: 'first info'),
-          entry(
-            level: Level.WARNING,
-            line: 'a warning',
-            lineLabels: const {'lvl': 'WARNING'},
-          ),
-          entry(line: 'second info'),
-        ], const {}),
-      ) as Map<String, dynamic>;
+      final body =
+          json.decode(
+                appenderWithoutAuth().buildJsonBody([
+                  entry(line: 'first info'),
+                  entry(
+                    level: Level.WARNING,
+                    line: 'a warning',
+                    lineLabels: const {'lvl': 'WARNING'},
+                  ),
+                  entry(line: 'second info'),
+                ], const {}),
+              )
+              as Map<String, dynamic>;
       final streams = body['streams'] as List<dynamic>;
       expect(streams, hasLength(2));
 

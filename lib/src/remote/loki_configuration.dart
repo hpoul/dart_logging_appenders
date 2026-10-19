@@ -8,8 +8,10 @@ class LokiConfiguration {
     this.connectionType = LokiConnectionType.https,
     this.authConfiguration,
     required this.labels,
-  }) : assert(!server.contains('://'),
-            'server must be a plain host, without scheme.');
+  }) : assert(
+         !server.contains('://'),
+         'server must be a plain host, without scheme.',
+       );
 
   /// Host (and optional port) of the Loki server, e.g. `loki:3100`.
   ///

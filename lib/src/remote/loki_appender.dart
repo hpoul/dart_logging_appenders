@@ -36,18 +36,18 @@ class LokiApiAppender extends BaseHttpLogSender {
     LogRecordFormatter? formatter,
     int? bufferSize,
   }) : this.withConfiguration(
-          configuration: LokiConfiguration(
-            server: server,
-            connectionType: connectionType,
-            authConfiguration: LokiAuthConfiguration(
-              username: username,
-              password: password,
-            ),
-            labels: labels,
-          ),
-          formatter: formatter,
-          bufferSize: bufferSize,
-        );
+         configuration: LokiConfiguration(
+           server: server,
+           connectionType: connectionType,
+           authConfiguration: LokiAuthConfiguration(
+             username: username,
+             password: password,
+           ),
+           labels: labels,
+         ),
+         formatter: formatter,
+         bufferSize: bufferSize,
+       );
 
   final LokiConfiguration configuration;
 
@@ -152,10 +152,10 @@ class LokiApiAppender extends BaseHttpLogSender {
     }
     return sendRequest(
       http.AbortableRequest(
-        'POST',
-        Uri.parse(pushUrl),
-        abortTrigger: cancelToken,
-      )
+          'POST',
+          Uri.parse(pushUrl),
+          abortTrigger: cancelToken,
+        )
         ..body = buildJsonBody(entries, userProperties)
         ..headers.addAll(requestHeaders)
         ..headers[HttpHeaders.contentTypeHeader] = ContentType.json.value,
@@ -170,9 +170,8 @@ class LokiPushBody {
   final List<LokiStream> streams;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'streams':
-            streams.map((stream) => stream.toJson()).toList(growable: false),
-      };
+    'streams': streams.map((stream) => stream.toJson()).toList(growable: false),
+  };
 }
 
 /// A single Loki stream: entries sharing the same set of labels.
@@ -183,7 +182,7 @@ class LokiStream {
   final List<LogEntry> entries;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'stream': labels,
-        'values': entries,
-      };
+    'stream': labels,
+    'values': entries,
+  };
 }
