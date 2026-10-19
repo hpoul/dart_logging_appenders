@@ -1,3 +1,10 @@
+## 2.1.0-dev.1
+
+* Loki: push to `/loki/api/v1/push` using the current `stream`/`values` payload format (thanks @nicop2000 #25)
+* Loki: group entries by level into separate streams with a `level` label
+* Loki: configure via `LokiConfiguration` (http/https, optional auth); the previous constructor still works but is deprecated
+* Loki: attach `userProperties` as structured metadata; skip requests for empty batches
+
 ## 2.0.0+1
 
 * Expose `loggingAppenderInternalLogging` setter to change log level vor internal (dummy) logger.
