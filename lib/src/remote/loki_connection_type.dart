@@ -1,7 +1,8 @@
+/// Transport protocol used to reach the Loki server.
 enum LokiConnectionType {
-  http('http'),
-  https('https');
-  final String value;
+  /// Plain HTTP, e.g. for local servers or IP addresses.
+  http,
 
-  const LokiConnectionType(this.value);
+  /// HTTPS. This is the default.
+  https,
 }
